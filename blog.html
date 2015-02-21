@@ -38,7 +38,7 @@
 <div class="container">
   
   <div class="text-center">
-    <h1>TECH LOG</h1>
+    <h1>A Daily Log</h1>
     
     </div>
 
@@ -46,7 +46,26 @@
     <h2>Jumping into CTFS</h2>
     <h3>Date: 18th September, 2014</h3>
     <p class="lead">My first play and learn session with CTF was really exhilarating. This is a wonderful way to learn Assembly Language, and to gain a good understanding of what ‘Capture the Flag’ actually is. Following is a synopsis of the tutorial concerned with it, which forms the primary building block of what comes after this.<br>
-    <code> tst a,b </code>
+
+      -Assembly Functions <br>
+    <ul>
+      <li><code>tst </code>– testing whether a number is non zero or not<li>
+      <li><code>mov</code> – moving the first operand into the second operand [more appropriately, the value]</li>
+      <li><code>add</code> – storing the sum of the two operands into the second one [will take only the 4 bits and ignore any overflow bits]</li>
+      <li><code>inc/dec </code>– inc(dec)rementing the value of the register</li>
+      <li><code>incd/decd</code> – inc(dec)rementing the value of the register by 2 bytes</li>
+      <li><code>jnz</code> – jumping if the register dealt with in the previous line of code is not zero</li>
+      <li><code>jeq/jz</code> – jumping if the register dealt with in the previous line of code is zero, or equal( essentially, both mean the same, as the cmp function hands over a ‘zero flag’ once the two numbers are equal.)</li>
+      <li><code>cmp </code>– compares two values and stores the result in a status flag</li>
+      <li><code>ret</code> – returns the control to the caller function
+      <li><code>swpb</code> – swaps the bits [in a nibble]</li>
+      <li><code>bis</code> - Binary subtracts and stores the lesser significant 4 bits/ Also called Bit set, or the ‘OR’ operation.</li>
+      <li><code>sxt</code> – Extends the word to binary form, to enable mathematical operations on the register, like addition, multiplication, etc.    </li>
+
+
+
+    </ul>
+
     </p>
   </div>
   
