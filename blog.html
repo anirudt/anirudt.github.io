@@ -47,9 +47,9 @@
     <h4>Date: 18th September, 2014</h3>
     <p>My first play and learn session with CTF was really exhilarating. This is a wonderful way to learn Assembly Language, and to gain a good understanding of what ‘Capture the Flag’ actually is. Following is a synopsis of the tutorial concerned with it, which forms the primary building block of what comes after this.<br>
 
-      -Assembly Functions <br>
+     <b>Some Assembly commands were: </b> 
     <ul>
-      <li><code>tst </code>– testing whether a number is non zero or not<li>
+      <li><code>tst </code>– testing whether a number is non zero or not</li>
       <li><code>mov</code> – moving the first operand into the second operand [more appropriately, the value]</li>
       <li><code>add</code> – storing the sum of the two operands into the second one [will take only the 4 bits and ignore any overflow bits]</li>
       <li><code>inc/dec </code>– inc(dec)rementing the value of the register</li>
@@ -61,6 +61,26 @@
       <li><code>swpb</code> – swaps the bits [in a nibble]</li>
       <li><code>bis</code> - Binary subtracts and stores the lesser significant 4 bits/ Also called Bit set, or the ‘OR’ operation.</li>
       <li><code>sxt</code> – Extends the word to binary form, to enable mathematical operations on the register, like addition, multiplication, etc.    </li>
+    <br>
+    <b>Some basic conventions are:</b>
+      <ul>
+        <li>#x – refers to a constant value to be added, operated or compare to.</li>
+        <li>@R – works like the *ptr form, which accesses the value stored within a register pointed to by R. </li>
+      </ul>
+      <br>
+      <b>Basic Learnings and things to carry forward
+      </b>
+      <ul>
+
+      <li>sr – this is the Status Register, hovering the mouse over it would indicate  c-> carry flag is set, else it means that the zero flag is not set yet</li>
+      <li>The Disassembly contains all the code available within the kernel for manipulation and reading</li>
+      <li>The Memory Area will contain the values stored inside the different registers in their specific addresses</li>
+      <li>The Instruction Area exactly contains which instruction is going to be executed. This can be accomplished properly with step(s), break(b) etc.</li>
+      <li>The console can be reached for help by using the ‘help’ command</li>
+      <li>In the tutorial, r12 – stores the number of letters the entered password contains</li>
+      <li>All details are stored in hex, base 16</li>
+      <br><b> Key Idea </b>
+      Find the code line which needs to be reached, and try to backtrack your events from there for better understanding of what needs to be achieved. Analyse the <check-password> function properly.
 
 
 
