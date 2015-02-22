@@ -40,6 +40,34 @@
   <div class="text-center">
     <h1>A Daily Log</h1></div>
 
+  <div class="text-left">
+    <h3>List of Unix Commands used in Bandit/CTFs</h3>
+    <h4>Date: 18th October, 2014</h4>
+    <p>A list of Linux tools used for Bandit. Some specific usages are also provided.
+    <ul>
+      <li>
+    <code>du</code> - used for estimating file space usage by a file</li>
+    <li><code>file ./* </code>– used for giving the file types of all the files present in the present working directory</li>
+    <li><code>ls, cd, cat, find </code>- pretty obvious/frequent to use</li>
+    <li>Spaces in the file-name can be overridden by use of a backslash.</li>
+    <li><code>grep</code> – match lines corresponding to a particular pattern. Very useful command, with lots of flags enabled as well.</li>
+    <li><code>base64</code> – base64 encode/decode data. Use the -d flag for decoding.</li>
+    <li><code>sort</code> – sorts lines of text files</li>
+    <li><code>uniq </code>– output/omit repeated files. Can be modelled well using a number of flags. See our Frequency Analysis post for the same.</li>
+    <li><code>tr </code>– translate characters. Helps to map a string/or encode it into a particular cipher. Used for cryptographical purposes.</li>
+    <li><code>strings</code> - Print the strings of printable characters in the file</li>
+    <li><code>gzip, bzip2</code> – used to compress/expand files. Note the file type before doing anything.</li>
+    <li><code>xxd </code>– Gives the memory hex dump.</li>
+    <li><code>cp </code>– Copies a file from a source to the destination</li>
+    <li><code>mv </code>– Moves a file from a source to a destination. Used especially for renaming files.</li>
+    <li><code>nc </code>– Makes arbitrary TCP/UDP connections possible and listens. Has a plethora of functions/flags, utilities. Search for netcat.</li>
+    <li><code>openssl</code> – OpenSSL Command Line Tool. Basically, s_client is really useful.</li>
+    <li><code>s_client</code> – Used for connecting to a particular host especially through a particular port. Used with quite a few flags.</li>
+    <li><code>nmap</code> – Used to know the status of all ports in the machine. Very useful for determining functions of the ports and to protect subsequent unprotected ports from  attacks.</li>
+    <li>Setuids are binary executables. Search on Wikipedia for more information about their user access, etc. They can be executed by <code>./setuid_name {arguments_if_any}</code>. Also, {strings} can be used to find the working inside.</li>
+    <li><code>cron, crontab</code> - pretty self explanatory. The time machine of the system.</li>
+  </p></div>
+<p>__________________________________________________________________________________________________________________________________________________</p>
 
   <div class="text-left">
   <h3>Frequency Analysis - Unix Tool</h3>
@@ -54,7 +82,7 @@
   <h4>Date: 22nd September, 2014</h4>
   <p>One of the main concepts involved in Capture The Flag stage, named Cusco, typically revolved around smashing the stack. The earlier stages involved finding clues about the password within the live memory. This one prevented any such processes, and allowed a longer password than the earlier one. Let us talk about what the term exactly means, so that we can effectively use it for future purposes.<br> What does it mean? <br>Smashing the stack, involves storing input into a stack, which will overflow the existing number of bytes in the stack. This thus, will creep into the memory locations of the neighboring registers, executing which, we can manipulate the program counter. Another hack procedure, could be to search for a return command, as the program counter will point to where the stack pointer is, after execution.
 
-The <b>strcpy<b> function also has bugs, which can be exploited.
+The <b>strcpy</b> function also has bugs, which can be exploited.
   </p>
 </div>
 <p>__________________________________________________________________________________________________________________________________________________</p>
