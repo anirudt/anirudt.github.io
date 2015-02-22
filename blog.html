@@ -38,22 +38,23 @@
 <div class="container">
   
   <div class="text-center">
-    <h1>A Daily Log</h1>
-    
-    </div>
+    <h1>A Daily Log</h1></div>
+
+
+  <div class="text-left">
+  <h3>Frequency Analysis - Unix Tool</h3>
+  <h4>Date: 18th October, 2014</h4>
+  <p><code> grep -o . file | sort | uniq -c </code>
+  <br> add an <code>-i</code> to <code>uniq</code> if you want it to ignore case.
+  </p></div>
+<p>__________________________________________________________________________________________________________________________________________________</p>
 
   <div class="text-left">
   <h3>Smash the stack</h3>
   <h4>Date: 22nd September, 2014</h4>
-  <p>
+  <p>One of the main concepts involved in Capture The Flag stage, named Cusco, typically revolved around smashing the stack. The earlier stages involved finding clues about the password within the live memory. This one prevented any such processes, and allowed a longer password than the earlier one. Let us talk about what the term exactly means, so that we can effectively use it for future purposes.<br> What does it mean? <br>Smashing the stack, involves storing input into a stack, which will overflow the existing number of bytes in the stack. This thus, will creep into the memory locations of the neighboring registers, executing which, we can manipulate the program counter. Another hack procedure, could be to search for a return command, as the program counter will point to where the stack pointer is, after execution.
 
-One of the main concepts involved in Capture The Flag stage, named Cusco, typically revolved around smashing the stack. The earlier stages involved finding clues about the password within the live memory. This one prevented any such processes, and allowed a longer password than the earlier one. Let us talk about what the term exactly means, so that we can effectively use it for future purposes.
-
-<br> What does it mean? <br>
-
-Smashing the stack, involves storing input into a stack, which will overflow the existing number of bytes in the stack. This thus, will creep into the memory locations of the neighboring registers, executing which, we can manipulate the program counter. Another hack procedure, could be to search for a return command, as the program counter will point to where the stack pointer is, after execution.
-
-The strcpy function also has bugs, which can be exploited.
+The <b>strcpy<b> function also has bugs, which can be exploited.
   </p>
 </div>
 <p>__________________________________________________________________________________________________________________________________________________</p>
