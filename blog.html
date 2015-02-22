@@ -43,12 +43,27 @@
     </div>
 
   <div class="text-left">
+  <h3>Smash the stack</h3>
+  <h4>Date: 22nd September, 2014</h4>
+  <p>
+
+One of the main concepts involved in Capture The Flag stage, named Cusco, typically revolved around smashing the stack. The earlier stages involved finding clues about the password within the live memory. This one prevented any such processes, and allowed a longer password than the earlier one. Let us talk about what the term exactly means, so that we can effectively use it for future purposes.
+
+<br> What does it mean? <br>
+
+Smashing the stack, involves storing input into a stack, which will overflow the existing number of bytes in the stack. This thus, will creep into the memory locations of the neighboring registers, executing which, we can manipulate the program counter. Another hack procedure, could be to search for a return command, as the program counter will point to where the stack pointer is, after execution.
+
+The strcpy function also has bugs, which can be exploited.
+  </p>
+</div>
+<p>__________________________________________________________________________________________________________________________________________________</p>
+  <div class="text-left">
     <h3>Quine McClusky Implementation</h3>
     <h4>Date: 21st September, 2014</h4>
     <p>As part of my Digital Electronics Course, I implemented an implementation of the renowned Quine McClusky Algorithm for multivariable function minimization. So, here are the learnings that I could derive from it:
-
+      <br>
     <b>Why Python</b>
-
+      <br>
     I was personally biased towards Python for this particular problem statement, as I realised, that a number of arrays, and lists of different kinds of data would be required, for indexing and for storage purposes. Python offers a plethora of options, and also some built-in functions implementing which in C/Java could take various lines of code.
 
     You can reach out to the post <a href="https://gist.github.com/anirudt/0f5dcce0da9e7e978161">here</a>
