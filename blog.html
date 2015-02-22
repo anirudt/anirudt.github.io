@@ -41,6 +41,27 @@
     <h1>A Daily Log</h1></div>
 
   <div class="text-left">
+  <h3>GDB Exploits</h3>
+  <h4>Date: 19th October, 2014</h4>
+  <p>
+
+The following key exploits can be utilized in the GDB Debugger.
+<ul>
+    <li>To enter, place <code>gdb exe_file_name</code> to enter into the GDB debugger.</li>
+    <li>To place break points, use<code> break function_name</code>, else use <code>break *addressline</code> to break onto that particular line.</li>
+    <li>To compute the dissasembly of a function, say main, type <code>disas main</code> at the prompt.</li>
+    <li>To run the program with some argc, argv arguments, type <code>run [arguments]</code>.</li>
+    <li>To get the hex memory dump, type <code>x/32xw $esp</code> to show first 32 lines of the memory dump. This is similar to <code>xxd</code>. Also, the<code> $esp</code> shows the stack pointer. The earlier ‘x’ stands for the examine function. And the succeeding ‘x’ stands for showing hex patterns.</li>
+    <li>Type ‘c’ for continue and ‘s’ for stepping one step at a time.</li>
+    <li>To get information about the values stored in the various registers, type <code>info registers</code>, or just<code> i r</code>.</li>
+    <li>To backtrace the function calls, just put a bt once at a breakpoint/amidst the running of the program call.</li>
+</ul>
+</p></div>
+
+
+
+
+  <div class="text-left">
   <h3>Vim Ideology</h3>
   <h4>Date: 19th October, 2014</h4>
   <p>There are basically 3 modes functioning within Vim. One, a middle mode used for aligning the basic format of the entire document, Two, the main mode for editing and adding stuff, and Three, a mode for exiting, saving, etc.
