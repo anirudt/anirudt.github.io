@@ -42,9 +42,22 @@
     
     </div>
 
+   <div class="text-left">
+   <h3>Stack pointer and memory storage conventions</h3>
+   <h4>Date: 20th September, 2014</h4> 
+   <p>A noteworthy point of discussion is the difference in conventions of the stack pointer direction. Following are the points to note:
+    <ul>
+    <li>The stack pointer moves about, throughout the stack, and is the head of the stack. Any pushing/popping happens where it points to.</li>
+    <li>Memory allocation is from bottom(least) to top(most).</li>
+    <li>When the caller function meets the calling statement of another function, the stack pointer goes a few required bytes down, and begins execution of the statements. Then, it will come back and follow all steps again.</li>
+    <li>The register values stored inside the functions also depend on the lexical scope that they’re based at. Hence, if any value needs to be stored, decrement/increment the sp accordingly and store the values there, to be popped at the time of reference.</li>
+    </ul>
+   </p>
+   </div> 
+
   <div class="text-left">
-    <h3>Jumping into CTFS</h2>
-    <h4>Date: 18th September, 2014</h3>
+    <h3>Jumping into CTFs</h3>
+    <h4>Date: 18th September, 2014</h4>
     <p>My first play and learn session with CTF was really exhilarating. This is a wonderful way to learn Assembly Language, and to gain a good understanding of what ‘Capture the Flag’ actually is. Following is a synopsis of the tutorial concerned with it, which forms the primary building block of what comes after this.<br>
 
      <b>Some Assembly commands were: </b> 
