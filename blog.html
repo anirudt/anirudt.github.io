@@ -53,15 +53,31 @@
 
 <p>__________________________________________________________________________________________________________________________________________________</p>
 
+  <div class="text-left">
+    <h3>Update to the Android-Java-JNI Project</h3>
+    <h4>Date: 27th February, 2015</h4>
+    <p> After implementing some Image Processing in the backend in Java, the slowness of the computation forced me to fall onto C/C++ for backend work, using OpenCV. Thus, I had to use JNI interface which extends a native outlook to Java which helps in interchange of data between Java and C/C++. For this, I found two useful links, which talk about Array interchange between Java and C++, which could be quite difficult, considering the difference in the data structures in which both of them store their so called "arrays". These resources could be found <a href="https://code.google.com/p/awesomeguy/wiki/JNITutorial#Passing_Arrays">here</a> and an error rectification source <a href="https://groups.google.com/forum/#!topic/android-ndk/6abInJBSMEI">here</a>. Thus, effectively, the array can be passed from Java to the native portion for processing, and the processed array can also be exchanged back without much effort. This is a good breakthrough in terms of data handling. 
+
+      </p><br>
+      <p> Tags: </div>
+  <div class="text-primary">
+    #android, #java, #image-processing, #c, #c++, #eclipse</div> </p>
+
+<p>__________________________________________________________________________________________________________________________________________________</p>
+
 <div class="text-left">
     <h3>Links for Word Lattice Implementation</h3>
     <h4>Date: 23rd February, 2014</h4>
     <p>I am currently working with word lattices in Grammatical Error Correction [GEC], using OpenFST, where I need an implementation of a word lattice in Python. Sharing two links I found useful, <a href="http://www.cdec-decoder.org/concepts/lattices.html">here</a> and <a href="http://www.statmt.org/moses/?n=Moses.WordLattices">here.</a> Both use some form of PLF, as in Python Lattice Format. Have to look into it a little more deeply.
 
+    <br>
+    Edit: I ended up using the following data structure: A dictionary where each key is the initial state, and the value is the list of lists, where each sub-list consisted of the output state, and the edge materials [the string and the associated weight]. This was a little heavy, but it encoded all the information nevertheless. Later, I found about the Networkx library hosted on GitHub which could be an easier way to implement and use Graph Algorithms.
+    <br>
+    An article should follow about use of OpenFST, pointers to good useful documentation. 
       </p><br>
-      <p> Tags:</div>
+      <p> Tags: </div>
   <div class="text-primary">
-    #python, #nlp, #link</div></p>
+    #python, #nlp, #link, #openfst</div></p>
 
 <p>__________________________________________________________________________________________________________________________________________________</p>
 
