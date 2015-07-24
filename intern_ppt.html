@@ -127,13 +127,43 @@ THE SOFTWARE.
                 </section>
                 <section data-background="#2c3e50">
                     <ul>
-                      <li>Worked on an off-target test framework</li>
+                      <li>Worked on an off-target test framework.</li>
                       <li>Visualising plausible scenarios and implementing the test case scenarios and sufficient validation as well.</li>
                       <li>Every new feature addition/bug fix needs to satisfy all the off-target test cases.</li>
-                      <li>Worked on Qualcomm's proprietary version of Radio Interface Layer [RIL]</li>
+                      <li>Worked on Qualcomm's proprietary version of Radio Interface Layer [RIL].</li>
                     </ul>
                 </section>
             </section>
+            <section>
+                <section data-background="#2980b9">
+                    <h1>Test Framework</h1>
+                </section>
+                <section data-background="#2c3e50">
+                    <ul>
+                      <li>Entire framework software is written in C/C++.</li>
+                      <li>Framework consisting of several modules, to test several components present in the Linux Data Architecture.</p>
+                      <li>Each suite consists of a Makefile to compile the files with the requisite header files, and one Makefile to link them all.</li>
+                      <li>Consisting of a simulator acting as a modem, to relay dummy responses back to RIL.</li>
+                    </ul>
+                </section>
+                <section data-background="#2c3e50">
+                  <h3>Enhancements</h3>
+                    <ul>
+                      <li>Added multiple test cases to test Qualcomm's RIL in terms of Dual IP and Single IP calls, with the concept of Multi-PDN. Also, granular validation was added in terms of unsolicited events.</li>
+                      <li>Made the simulator side support a new feature called "Partial-Retry" and ensured test cases for the same. Fixed a bug in the proprietary RIL code to accommodate correct passing of IP-family through APIs.</li>
+                      <li>Added simulator support for DSD Registrations, and provided foolproof responses instead of providing dummy responses.</li>
+                      <li>Randomized the doling out of IPs in case of Multi-PDN calls, to prevent clashes between IPs.</li>
+                  
+                    </ul>
+                </section>
+                <section data-background="#2c3e50">
+                    <h2>Some Tweaks</h2>
+                      <ul>
+                        <li>All the output is piped to a master log file. Most developers would work only on a single test case at a time.</li>
+                        <li>Hence, developed a Perl script which would parse the log file and pipe out a "test_case_file.log" file for convenience.</li>
+                      </ul>
+                </section>
+           </section>      
                 <section>
                     <h2>Easy to collaborate</h2>
                     <ul>
