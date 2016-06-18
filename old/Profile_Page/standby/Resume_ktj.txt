@@ -1,0 +1,78 @@
+<html>
+<head>
+<title> Resume- Anirud Thyagharajan </title>
+<style type="text/css">
+body
+{
+background-image:url("back copy1.jpg");
+}
+#left1
+{
+float:left;
+border:2px solid white;
+margin-top:9em;
+margin-left:8em;
+width:10%;
+padding:1%;
+}
+#bod
+{
+color:white;
+float:left;
+padding:1%;
+width:40%;
+padding-left:3%;
+margin-top:9em;
+padding-right:1%;
+font-size:16px;
+}
+#pic
+{
+float:right;
+margin-top:9em;
+border:2px solid white;
+margin-right:6em;
+padding-left:4%
+padding:1%;
+}
+
+</style>
+</head>
+ 
+<body>
+
+<div id="left1">
+<a href="http://www.google.com">
+<img src="Interest.jpg"
+height="80"
+width="120"
+/> </a>
+<p> </p>
+<img src= "SkillSet.jpg"
+height="80"
+width="120"
+> </img>
+<p></p>
+<img src="res.jpg"
+height="80"
+width="120"
+> </img>
+<p> </p>
+<img src="c.jpg"
+height="80"
+width="120"
+> </img>
+</div>
+
+<div id="bod">
+
+<p> My resume can be accessed at the following link. Also, browse the tabs for further communication channels </p>
+<p> </p>
+<a href="https://docs.google.com/file/d/0B0VsIIhwuu38c21ROVhDMHNxSlU/edit?usp=sharing"> My Resume </a>
+
+</div>
+
+</body>
+</html>
+
+ 

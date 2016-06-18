@@ -1,0 +1,23 @@
+<html>
+<head>
+<title> Anirud Thyagharajan </title>
+<style type="text/css">
+#head
+{
+text-align:center;
+color:white;
+margin-top:2em;
+}
+body
+{
+background-image:url("back_edited-1.jpg");
+}
+</style>
+</head>
+<body>
+
+<div id="head">
+<p> Hey there </p>
+</div>
+</body>
+</html>
