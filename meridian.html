@@ -560,7 +560,7 @@ pre.ascii-art.map-art {
 </style>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='14' font-size='14'>🧭</text></svg>">
 <script>window.MF_CONFIG = { gameUrl: "https://anirudt.github.io/meridian.html" };</script>
-<!--MF-BUILD:7297571-->
+<!--MF-BUILD:c5dda78-->
 </head>
 <body>
 <div id="app">
@@ -3262,7 +3262,9 @@ pre.ascii-art.map-art {
     const k = game.kase;
     const won = game.phase === 'won';
     const url = (root.MF_CONFIG && root.MF_CONFIG.gameUrl) ||
-      (root.location ? root.location.origin + root.location.pathname : '');
+      (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/.test(root.location.origin)
+        ? 'https://anirudt.github.io/meridian.html'   // dev server shares the real link
+        : root.location.origin + root.location.pathname);
     const lines = [
       'THE MERIDIAN FILES — OP. ' + k.codename + (game.playerName ? '  (DET. ' + game.playerName + ')' : ''),
       (k.date ? k.date : 'COLD CASE') + ': ' + (won ? 'SOLVED ✓' : 'UNSOLVED ✗'),
