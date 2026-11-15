@@ -510,6 +510,9 @@ pre.ascii-art.map-art {
   z-index: 700; cursor: pointer;
 }
 .travel-status { color: var(--amber); letter-spacing: 2px; font-size: 19px; }
+/* explicit width: the svg has no intrinsic size and would collapse inside
+   the centered flex overlay (and shrink its text with it) */
+.travel-map { width: min(94vw, 1000px); max-width: 100%; }
 
 /* proximity stingers */
 .stinger-strip {
@@ -557,7 +560,7 @@ pre.ascii-art.map-art {
 </style>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='14' font-size='14'>🧭</text></svg>">
 <script>window.MF_CONFIG = { gameUrl: "https://anirudt.github.io/meridian.html" };</script>
-<!--MF-BUILD:36dee74-->
+<!--MF-BUILD:7297571-->
 </head>
 <body>
 <div id="app">
@@ -3818,7 +3821,7 @@ pre.ascii-art.map-art {
 
     const overlay = document.createElement('div');
     overlay.className = 'travel-overlay';
-    const mapHost = el('div');
+    const mapHost = el('div', 'travel-map');
     const status = el('div', 'travel-status');
     const hint = el('div', 'skip-hint');
     hint.textContent = '[ click to skip ]';
