@@ -481,6 +481,9 @@ pre.ascii-art {
 @keyframes mf-fade-out { from { opacity: 1; } to { opacity: 0; } }
 .scene-svg .mf-ground-sack { animation: mf-thud .2s cubic-bezier(.4,0,1,1) 1.1s both, mf-fade-in .05s linear 1.3s both; }
 @keyframes mf-thud { from { transform: translateY(-76px); } to { transform: translateY(0); } }
+.scene-svg .mf-ground-gun { transform-box: fill-box; transform-origin: 50% 50%;
+  animation: mf-gun-drop .38s cubic-bezier(.3,.6,.6,1) 1.15s both, mf-fade-in .05s linear 1.2s both; }
+@keyframes mf-gun-drop { from { transform: translate(-16px, -36px) rotate(-160deg); } to { transform: translate(0, 0) rotate(0); } }
 
 /* jail: bars slam with a rattle; clank spark */
 .scene-svg .mf-bars { animation: mf-slam .55s cubic-bezier(0,.7,.4,1) .35s both; }
@@ -554,7 +557,7 @@ pre.ascii-art.map-art {
 </style>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='14' font-size='14'>🧭</text></svg>">
 <script>window.MF_CONFIG = { gameUrl: "https://anirudt.github.io/meridian.html" };</script>
-<!--MF-BUILD:6b92e0c-->
+<!--MF-BUILD:36dee74-->
 </head>
 <body>
 <div id="app">
@@ -2302,12 +2305,20 @@ pre.ascii-art.map-art {
       body = '<path d="M -9,-58 L 10,-58 L 15,-18 L 9,-14 L 2,-18 L -12,-14 Z" fill="' + c + '"/>' +
         // collar/lapel edge
         '<path d="M 4,-58 L 9,-50 L 6,-44" stroke="#1c5e2a" stroke-width="1.5" fill="none"/>';
-      head = '<circle cx="4" cy="-66" r="6.2" fill="' + c + '"/>';
-      gear = '<path d="M -3,-71 L 16,-71 L 16,-73 L -3,-73 Z" fill="' + c + '"/>' +
-        '<path d="M 0,-80 L 12,-80 L 13,-73 L -1,-73 Z" fill="' + c + '"/>' +
-        '<line x1="-3" y1="-72" x2="-7" y2="-70" stroke="' + c + '" stroke-width="2"/>';
+      // green face, fedora tilted low, brim shadow hiding the eyes
+      head = '<circle cx="4" cy="-65" r="6" fill="' + c + '"/>' +
+        '<path d="M -1,-68 L 12,-68 L 11,-64 L 0,-64 Z" fill="#0b2712"/>' +
+        '<g transform="rotate(-7 4 -69)">' +
+        '<path d="M -5,-68 L 18,-68 L 18,-70.2 L -5,-70.2 Z" fill="' + c + '"/>' +
+        '<path d="M 0,-78.5 L 12,-78.5 L 13.5,-70 L -0.5,-70 Z" fill="' + c + '"/>' +
+        '<path d="M 1,-76 L 12,-76 L 12,-77 L 1,-77 Z" fill="#1c5e2a"/>' +
+        '</g>' +
+        // popped collar
+        '<path d="M -6,-58 L -1,-63 L 3,-58 L 8,-62 L 11,-57 Z" fill="' + c + '"/>';
       arms += '<g transform="translate(1,-54)"><line x1="0" y1="0" x2="15" y2="11" stroke-width="5" stroke="' + c + '" stroke-linecap="round"/>' +
         (opts.nosack ? '' : '<circle cx="17" cy="14" r="6" fill="' + AMBER + '"/>') + '</g>';
+      // pistol tucked at the belt under the coat
+      gear += '<path d="M -2,-33 L 8,-33 L 8,-30.5 L 4.5,-30.5 L 3.5,-26 L 1,-26 L 2,-30.5 L -2,-30.5 Z" fill="#04140a"/>';
     } else {
       body = '<path d="M -8,-56 L 10,-56 L 12,-24 L 6,-20 L -6,-24 Z" fill="' + c + '"/>' +
         '<line x1="1" y1="-56" x2="1" y2="-24" stroke="#1a5a63" stroke-width="1.2"/>'; // coat seam
@@ -2405,14 +2416,17 @@ pre.ascii-art.map-art {
         figure(anim, { thief: true, c: GREEN, still: true, nosack: true }) +
         (anim
           ? '<circle cx="18" cy="-41" r="6" fill="' + AMBER + '" class="mf-hand-sack"/>' +
+            '<path d="M 16,-42 L 26,-42 L 26,-39.5 L 22.5,-39.5 L 21.5,-35 L 19,-35 L 20,-39.5 L 16,-39.5 Z" fill="#04140a" class="mf-hand-sack"/>' +
             '<g class="mf-arms">' +
             '<line x1="2" y1="-56" x2="-14" y2="-80" stroke="' + GREEN + '" stroke-width="5" stroke-linecap="round"/>' +
             '<line x1="2" y1="-56" x2="18" y2="-80" stroke="' + GREEN + '" stroke-width="5" stroke-linecap="round"/></g>' +
-            '<circle cx="16" cy="-4" r="6" fill="' + AMBER + '" class="mf-ground-sack"/>'
+            '<circle cx="16" cy="-4" r="6" fill="' + AMBER + '" class="mf-ground-sack"/>' +
+            '<path d="M 34,-6 L 44,-6 L 44,-3.5 L 40.5,-3.5 L 39.5,1 L 37,1 L 38,-3.5 L 34,-3.5 Z" fill="#0f3a1b" class="mf-ground-gun"/>'
           : '<g>' +
             '<line x1="2" y1="-56" x2="-14" y2="-80" stroke="' + GREEN + '" stroke-width="5" stroke-linecap="round"/>' +
             '<line x1="2" y1="-56" x2="18" y2="-80" stroke="' + GREEN + '" stroke-width="5" stroke-linecap="round"/></g>' +
-            '<circle cx="16" cy="-4" r="6" fill="' + AMBER + '"/>') +
+            '<circle cx="16" cy="-4" r="6" fill="' + AMBER + '"/>' +
+            '<path d="M 34,-6 L 44,-6 L 44,-3.5 L 40.5,-3.5 L 39.5,1 L 37,1 L 38,-3.5 L 34,-3.5 Z" fill="#0f3a1b"/>') +
         '</g>';
       g += mover('mf-copL', anim, '150,188') + figure(anim, { cop: true, c: CYAN, still: !anim }) + '</g>';
       g += mover('mf-copR', anim, '510,188') +
@@ -2430,14 +2444,16 @@ pre.ascii-art.map-art {
         '<polygon points="96,82 126,82 168,188 58,188" fill="#cfe8cf" opacity=".05"/>';
       g += '<rect x="215" y="26" width="210" height="162" fill="none" stroke="' + HAIR + '" stroke-width="1.5"/>';
       g += ground(188, null);
-      // slumped silhouette, fedora on the floor beside him
+      // slumped silhouette, hat low over the eyes
       g += '<g transform="translate(302,188)">' +
         '<path d="M -6,-46 L 8,-48 L 12,-22 L -8,-20 Z" fill="' + GREEN + '"/>' +
         '<circle cx="10" cy="-54" r="5.5" fill="' + GREEN + '"/>' +
+        '<path d="M 6,-56 L 15,-55.6 L 14.6,-53 L 6.5,-53.4 Z" fill="#0b2712"/>' +
+        '<path d="M 4,-58 L 18,-57 L 18,-59 L 4,-60 Z" fill="' + GREEN + '"/>' +
         '<path d="M 2,-52 L 15,-44 L 18,-26" stroke="' + GREEN + '" stroke-width="4.5" fill="none" stroke-linecap="round"/>' +
         '<path d="M -4,-22 L 14,-18 L 22,-2" stroke="' + GREEN + '" stroke-width="6" fill="none" stroke-linecap="round"/>' +
         '</g>';
-      g += '<path d="M 268,182 L 284,182 L 284,180 L 268,180 Z" fill="' + GREEN + '" opacity=".8"/>'; // fedora, forfeited
+      g += '<path d="M 258,180 L 270,180 L 270,182.5 L 266,182.5 L 265,186 L 262,186 L 263,182.5 L 258,182.5 Z" fill="#0f3a1b"/>'; // confiscated piece
       g += '<circle cx="240" cy="178" r="5" fill="' + AMBER + '" opacity=".7"/>';
       var bars = '';
       for (var x = 232; x <= 418; x += 26) bars += '<line x1="' + x + '" y1="30" x2="' + x + '" y2="186" stroke="#7fbf8a" stroke-width="3"/>';
