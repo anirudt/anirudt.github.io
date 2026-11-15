@@ -478,7 +478,6 @@ pre.ascii-art.map-art {
     <div class="name-block">
       <span class="name-label">DETECTIVE NAME:</span>
       <input id="name-input" maxlength="20" autocomplete="off" spellcheck="false" placeholder="CALL SIGN">
-      <button class="btn" id="btn-name">ENROLL</button>
       <span class="dim" id="name-note"></span>
     </div>
     <div class="title-buttons">
@@ -2673,21 +2672,12 @@ pre.ascii-art.map-art {
   function renderNameBlock() {
     const name = getPlayerName();
     const input = $('#name-input');
-    input.value = name || '';
-    $('#btn-name').textContent = name ? 'CHANGE' : 'ENROLL';
+    if (document.activeElement !== input) input.value = name || '';
     $('#name-note').textContent = name
-      ? 'The Bureau knows you as DETECTIVE ' + name + '. Stored on this device only.'
-      : 'Your call sign never leaves this device.';
+      ? 'THE BUREAU KNOWS YOU AS DETECTIVE ' + name + ' — SAVED AUTOMATICALLY.'
+      : 'YOUR CALL SIGN IS SAVED AS YOU TYPE, ON THIS DEVICE ONLY.';
     const greet = $('#title-greet');
-    if (greet) greet.textContent = name ? 'WELCOME BACK, DETECTIVE ' + name + '.' : 'NEW RECRUIT — ENROLL BELOW.';
-  }
-
-  function setPlayerName() {
-    const val = sanitizeName($('#name-input').value);
-    if (!val) { Audio.deny(); return; }
-    U.Store.set('name', val);
-    Audio.good();
-    renderNameBlock();
+    if (greet) greet.textContent = name ? 'WELCOME BACK, DETECTIVE ' + name + '.' : 'NEW RECRUIT — TYPE YOUR CALL SIGN ABOVE.';
   }
 
   /* ================= game rendering ================= */
@@ -3578,9 +3568,14 @@ pre.ascii-art.map-art {
       startCase('COLD-' + Date.now().toString(36).toUpperCase(), true);
     };
     $('#btn-help').onclick = function () { Audio.click(); showScreen('#screen-help'); };
-    $('#btn-name').onclick = setPlayerName;
+    // name auto-saves as you type — no enroll button
+    $('#name-input').addEventListener('input', function () {
+      const val = sanitizeName(this.value);
+      if (val) U.Store.set('name', val); else U.Store.set('name', null);
+      renderNameBlock();
+    });
     $('#name-input').addEventListener('keydown', function (ev) {
-      if (ev.key === 'Enter') { ev.stopPropagation(); setPlayerName(); }
+      if (ev.key === 'Enter') this.blur();
       ev.stopPropagation(); // typing in the name field must not trigger screen hotkeys
     });
     $('#btn-help-back').onclick = toTitle;
