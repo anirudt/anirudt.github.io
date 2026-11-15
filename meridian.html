@@ -386,6 +386,100 @@ pre.ascii-art {
 
 /* world map + travel overlay */
 .map-panel { overflow-x: auto; margin-bottom: 8px; text-align: center; }
+.map-panel .world-svg { width: 100%; max-width: 1000px; height: auto; }
+/* wide board: the map gets room so labels breathe */
+.modal-wide { max-width: 1060px; }
+.flight-toggle { display: flex; gap: 8px; margin-bottom: 8px; }
+.flight-toggle .btn { font-size: 16px; min-height: 34px; }
+.flight-toggle .btn.sel, .city-buttons .btn.sel {
+  border-color: var(--cyan); color: var(--cyan);
+  box-shadow: 0 0 8px rgba(85,255,255,.25); text-shadow: var(--glow);
+}
+.flight-toggle .btn.sel:hover, .city-buttons .btn.sel { background: rgba(85,255,255,.08); }
+
+/* ---------- SVG arrest cutscenes ---------- */
+.svg-overlay { display: flex; align-items: center; justify-content: center; background: rgba(2, 6, 2, 0.985); }
+.scene-host { width: min(92vw, 860px); }
+.scene-svg { width: 100%; height: auto; display: block; }
+.scene-svg * { shape-rendering: geometricPrecision; }
+#city-art .scene-svg { max-width: 320px; margin: 0 auto; }
+
+/* limb cycles — rotate around the joint (bbox top-left = hip/shoulder) */
+.scene-svg .mf-legf, .scene-svg .mf-legb, .scene-svg .mf-armb, .scene-svg .mf-wave {
+  transform-box: fill-box;
+}
+.scene-svg .mf-legf, .scene-svg .mf-armb { transform-origin: 0 0; }
+.scene-svg .mf-legb { transform-origin: 0 0; }
+.scene-svg .mf-wave { transform-origin: 0 100%; }
+.scene-svg .mf-legf { animation: mf-legf var(--cyc, .26s) ease-in-out infinite alternate; }
+.scene-svg .mf-legb { animation: mf-legb var(--cyc, .26s) ease-in-out infinite alternate; }
+.scene-svg .mf-armb { animation: mf-legb var(--cyc, .26s) ease-in-out infinite alternate; }
+.scene-svg .mf-bob { animation: mf-bob var(--cyc, .26s) ease-in-out infinite alternate; }
+@keyframes mf-legf { from { transform: rotate(-32deg); } to { transform: rotate(22deg); } }
+@keyframes mf-legb { from { transform: rotate(22deg); } to { transform: rotate(-32deg); } }
+@keyframes mf-bob { from { transform: translateY(0); } to { transform: translateY(-3px); } }
+.scene-svg .mf-wave { animation: mf-wave .6s ease-in-out infinite alternate; }
+@keyframes mf-wave { from { transform: rotate(-70deg); } to { transform: rotate(-15deg); } }
+
+/* siren + sparks + props: opacity blinks */
+.scene-svg .mf-sr { animation: mf-blink .5s steps(2, jump-none) infinite; }
+.scene-svg .mf-sb { animation: mf-blink .5s steps(2, jump-none) infinite reverse; }
+.scene-svg .mf-prop { animation: mf-prop .14s linear infinite; }
+.scene-svg .mf-spark1 { animation: mf-blink .3s linear infinite; }
+.scene-svg .mf-spark2 { animation: mf-blink .36s linear infinite; }
+.scene-svg .mf-puff1 { animation: mf-puff .9s ease-out infinite; }
+.scene-svg .mf-puff2 { animation: mf-puff 1.1s ease-out infinite; }
+@keyframes mf-blink { 0% { opacity: 1; } 50% { opacity: .1; } 100% { opacity: 1; } }
+@keyframes mf-prop { 0% { opacity: 1; } 50% { opacity: .15; } 100% { opacity: 1; } }
+@keyframes mf-puff { from { opacity: .3; } to { opacity: 0; } }
+
+/* scrolling ground/wake */
+.scene-svg .mf-dash3 { animation: mf-dash .3s linear infinite; }
+.scene-svg .mf-dash22 { animation: mf-dash .22s linear infinite; }
+.scene-svg .mf-wake { animation: mf-dashw 2s linear infinite; }
+@keyframes mf-dash { to { stroke-dashoffset: -42px; } }
+@keyframes mf-dashw { to { stroke-dashoffset: 70px; } }
+
+/* movers: wall-clock CSS transitions of position (fill both = frozen ends) */
+.scene-svg .mf-run-thief { animation: mf-run-move 1.7s cubic-bezier(.12,.8,.3,1) both; }
+@keyframes mf-run-move { from { transform: translate(-80px, 150px); } to { transform: translate(500px, 150px); } }
+.scene-svg .mf-chase-thief { animation: mf-chase-th 2.4s cubic-bezier(.12,.8,.3,1) both; }
+@keyframes mf-chase-th { from { transform: translate(420px, 150px); } to { transform: translate(545px, 150px); } }
+.scene-svg .mf-chase-cop1 { animation: mf-chase-c1 2.4s cubic-bezier(.12,.8,.3,1) both; }
+@keyframes mf-chase-c1 { from { transform: translate(150px, 150px); } to { transform: translate(275px, 150px); } }
+.scene-svg .mf-chase-cop2 { animation: mf-chase-c2 2.4s cubic-bezier(.12,.8,.3,1) both; }
+@keyframes mf-chase-c2 { from { transform: translate(80px, 150px); } to { transform: translate(225px, 150px); } }
+.scene-svg .mf-sur-thief { animation: mf-sur-th .9s cubic-bezier(.12,.8,.3,1) both; }
+@keyframes mf-sur-th { from { transform: translate(240px, 150px); } to { transform: translate(310px, 150px); } }
+.scene-svg .mf-copL { animation: mf-copl 1.2s cubic-bezier(.12,.8,.3,1) both; }
+@keyframes mf-copl { from { transform: translate(60px, 150px); } to { transform: translate(150px, 150px); } }
+.scene-svg .mf-copR { animation: mf-copr 1.3s cubic-bezier(.12,.8,.3,1) both; }
+@keyframes mf-copr { from { transform: translate(600px, 150px); } to { transform: translate(510px, 150px); } }
+.scene-svg .mf-plane { animation: mf-flyby 2.7s linear both; }
+@keyframes mf-flyby { from { transform: translate(700px, 120px); } to { transform: translate(-160px, 120px); } }
+.scene-svg .mf-walk-thief { animation: mf-walk 2.3s linear both; }
+@keyframes mf-walk { from { transform: translate(-40px, 104px); } to { transform: translate(320px, 104px); } }
+
+/* surround beats: spotlight, hands up, sack drop */
+.scene-svg .mf-spot { transform-box: fill-box; transform-origin: 50% 50%;
+  animation: mf-spot-in 1s ease-out .6s both; }
+@keyframes mf-spot-in { from { opacity: 0; transform: scaleX(.3); } to { opacity: .3; transform: scaleX(1); } }
+.scene-svg .mf-arms { animation: mf-fade-in .25s linear 1.1s both; }
+@keyframes mf-fade-in { from { opacity: 0; } to { opacity: 1; } }
+.scene-svg .mf-hand-sack { animation: mf-fade-out .1s linear 1.1s both; }
+@keyframes mf-fade-out { from { opacity: 1; } to { opacity: 0; } }
+.scene-svg .mf-ground-sack { animation: mf-thud .2s cubic-bezier(.4,0,1,1) 1.1s both, mf-fade-in .05s linear 1.3s both; }
+@keyframes mf-thud { from { transform: translateY(-76px); } to { transform: translateY(0); } }
+
+/* jail: bars slam with a rattle; clank spark */
+.scene-svg .mf-bars { animation: mf-slam .55s cubic-bezier(0,.7,.4,1) .35s both; }
+@keyframes mf-slam { 0% { transform: translateY(-180px); } 82% { transform: translateY(6px); } 100% { transform: translateY(0); } }
+.scene-svg .mf-clank { animation: mf-clank .5s linear .85s both; }
+@keyframes mf-clank { 0% { opacity: 0; } 30% { opacity: 1; } 100% { opacity: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .scene-svg * { animation: none !important; }
+}
 pre.ascii-art.map-art {
   font-size: 15px;
   line-height: 1.02;
@@ -449,7 +543,7 @@ pre.ascii-art.map-art {
 </style>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='14' font-size='14'>🧭</text></svg>">
 <script>window.MF_CONFIG = { gameUrl: "https://anirudt.github.io/meridian.html" };</script>
-<!--MF-BUILD:8031163-->
+<!--MF-BUILD:1207cc4-->
 </head>
 <body>
 <div id="app">
@@ -2135,6 +2229,197 @@ pre.ascii-art.map-art {
 
 </script>
 <script>
+/* art/svg-scenes.js — SVG cutscenes for the arrest sequence and the
+   arrival thief-walk. Motion is CSS keyframes (NOT SMIL: the Hermes
+   Chromium build has SMIL disabled; CSS animates everywhere and honors
+   prefers-reduced-motion). ui.js falls back to the ASCII ArtPlayer when
+   this module is absent.
+   Style: stroke-based stick figures, round caps, CGA colors:
+   thief = green trench + amber sack, cops = cyan caps w/ siren lamps. */
+(function (root) {
+  'use strict';
+
+  var GREEN = '#55ff55', CYAN = '#55ffff', AMBER = '#ffb000',
+      RED = '#ff6b5e', BLUE = '#559bff', DIM = '#2f5f34';
+  var NS = 'xmlns="http://www.w3.org/2000/svg"';
+
+  /* A running stick figure, origin at feet, facing right.
+     opts: thief (hood+sack), cop (cap+siren), still (planted pose),
+     dur (cycle length), cls (extra classes on the root g). */
+  function figure(anim, opts) {
+    opts = opts || {};
+    var cyc = anim && !opts.still;
+    var d = opts.dur || '.26s';
+    var style = cyc ? ' style="--cyc:' + d + '"' : '';
+    var legs = '', arms = '';
+    function leg(cls, x2) {
+      return '<g transform="translate(0,-34)"><g class="' + cls + '"' + style + '>' +
+        '<line x1="0" y1="0" x2="' + x2 + '" y2="34" stroke-width="5.5" stroke="' + opts.c + '" stroke-linecap="round"/></g></g>';
+    }
+    function arm(cls, x2, y2) {
+      return '<g transform="translate(3,-60)"><g class="' + cls + '"' + style + '>' +
+        '<line x1="0" y1="0" x2="' + x2 + '" y2="' + y2 + '" stroke-width="4.5" stroke="' + opts.c + '" stroke-linecap="round"/></g></g>';
+    }
+    legs = leg(cyc ? 'mf-legf' : '', 8) + leg(cyc ? 'mf-legb' : '', -6);
+    arms = arm(cyc ? 'mf-armb' : '', -10, 24);
+    if (opts.thief) {
+      // front arm clutching the sack (static) + hood + sack
+      arms += '<line x1="3" y1="-60" x2="17" y2="-47" stroke-width="4.5" stroke="' + opts.c + '" stroke-linecap="round"/>' +
+        '<circle cx="19" cy="-44" r="6.5" fill="' + AMBER + '"/>' +
+        '<path d="M -4,-80 L 14,-80 L 5,-67 Z" fill="' + opts.c + '"/>';
+    }
+    if (opts.cop) {
+      arms += '<rect x="-3" y="-83" width="16" height="5" fill="' + opts.c + '"/>' +
+        '<line x1="13" y1="-78" x2="21" y2="-78" stroke-width="3" stroke="' + opts.c + '"/>' +
+        '<line x1="5" y1="-83" x2="5" y2="-88" stroke="' + opts.c + '" stroke-width="2"/>' +
+        '<circle cx="1" cy="-92" r="3.2" fill="' + RED + '" class="' + (anim ? 'mf-sr' : '') + '"/>' +
+        '<circle cx="9" cy="-92" r="3.2" fill="' + BLUE + '" class="' + (anim ? 'mf-sb' : '') + '"/>';
+    }
+    var bobOpen = cyc ? '<g class="mf-bob"' + style + '>' : '<g>';
+    return bobOpen +
+      '<path d="M 0,-34 L 3,-62" stroke="' + opts.c + '" stroke-width="7" stroke-linecap="round"/>' +
+      '<circle cx="5" cy="-71" r="8.5" fill="none" stroke="' + opts.c + '" stroke-width="4.5"/>' +
+      legs + arms + '</g>';
+  }
+
+  function mover(cls, anim, from, to) {
+    // animated: CSS class drives transform; static: attribute at final pose
+    return anim ? '<g class="' + cls + '">' : '<g transform="translate(' + to + ')">';
+  }
+
+  function ground(y, scrollCls) {
+    return '<line x1="0" y1="' + y + '" x2="640" y2="' + y + '" stroke="' + DIM + '" stroke-width="2"/>' +
+      '<line x1="-40" y1="' + (y + 9) + '" x2="680" y2="' + (y + 9) +
+      '" stroke="' + DIM + '" stroke-width="2" stroke-dasharray="16 26"' +
+      (scrollCls ? ' class="' + scrollCls + '"' : '') + '/>';
+  }
+
+  var scenes = {
+
+    /* 1. THE RUN — thief bolts for the exit. */
+    run: function (anim) {
+      return '<svg ' + NS + ' viewBox="0 0 640 220" class="scene-svg">' +
+        ground(190, anim ? 'mf-dash3' : '') +
+        '<line x1="60" y1="118" x2="150" y2="118" stroke="' + GREEN + '" stroke-width="2" class="' + (anim ? 'mf-spark1' : '') + '" opacity=".4"/>' +
+        '<line x1="40" y1="140" x2="120" y2="140" stroke="' + GREEN + '" stroke-width="2" class="' + (anim ? 'mf-spark2' : '') + '" opacity=".3"/>' +
+        mover('mf-run-thief', anim, '', '500,150') +
+        figure(anim, { thief: true, c: GREEN, still: !anim }) + '</g></svg>';
+    },
+
+    /* 2. THE CHASE — two officers on his tail, sirens flashing. */
+    chase: function (anim) {
+      var g = ground(190, anim ? 'mf-dash22' : '');
+      g += mover('mf-chase-thief', anim, '', '545,150') + figure(anim, { thief: true, c: GREEN, still: !anim }) + '</g>';
+      g += mover('mf-chase-cop1', anim, '', '275,150') + figure(anim, { cop: true, c: CYAN, still: !anim }) + '</g>';
+      g += mover('mf-chase-cop2', anim, '', '225,150') + figure(anim, { cop: true, c: CYAN, still: !anim, dur: '.3s' }) + '</g>';
+      return '<svg ' + NS + ' viewBox="0 0 640 220" class="scene-svg">' + g + '</svg>';
+    },
+
+    /* 3. THE SURROUND — cornered; coppers close in, spotlight drops. */
+    surround: function (anim) {
+      var g = ground(190, null);
+      // spotlight ellipse (scaleX-in when animated)
+      g += '<ellipse cx="320" cy="188" rx="95" ry="9" fill="' + AMBER + '"' +
+        (anim ? ' opacity="0" class="mf-spot"' : ' opacity=".3"') + '/>';
+      // thief skids to a halt
+      g += mover('mf-sur-thief', anim, '', '310,150') +
+        figure(anim, { thief: true, c: GREEN, still: true }) +
+        (anim
+          ? '<circle cx="19" cy="-44" r="6.5" fill="' + AMBER + '" class="mf-hand-sack"/>' +
+            '<g class="mf-arms">' +
+            '<line x1="3" y1="-60" x2="-16" y2="-84" stroke="' + GREEN + '" stroke-width="4.5" stroke-linecap="round"/>' +
+            '<line x1="3" y1="-60" x2="22" y2="-84" stroke="' + GREEN + '" stroke-width="4.5" stroke-linecap="round"/></g>' +
+            '<circle cx="16" cy="32" r="6.5" fill="' + AMBER + '" class="mf-ground-sack"/>'
+          : '<g>' +
+            '<line x1="3" y1="-60" x2="-16" y2="-84" stroke="' + GREEN + '" stroke-width="4.5" stroke-linecap="round"/>' +
+            '<line x1="3" y1="-60" x2="22" y2="-84" stroke="' + GREEN + '" stroke-width="4.5" stroke-linecap="round"/></g>') +
+        '</g>';
+      // cops close in from both sides
+      g += mover('mf-copL', anim, '', '150,150') + figure(anim, { cop: true, c: CYAN, still: !anim }) + '</g>';
+      g += mover('mf-copR', anim, '', '510,150') +
+        '<g transform="scale(-1,1) translate(-30,0)">' + figure(anim, { cop: true, c: CYAN, still: !anim, dur: '.3s' }) + '</g></g>';
+      return '<svg ' + NS + ' viewBox="0 0 640 220" class="scene-svg">' + g + '</svg>';
+    },
+
+    /* 4. THE JAIL — bars slam down around him. */
+    jail: function (anim) {
+      var g = '<rect x="215" y="26" width="210" height="166" fill="none" stroke="' + DIM + '" stroke-width="3"/>';
+      g += ground(192, null);
+      // slumped thief behind bars (static, seated)
+      g += '<g transform="translate(300,190)">' +
+        '<path d="M 0,-30 L 3,-56" stroke="' + GREEN + '" stroke-width="7" stroke-linecap="round"/>' +
+        '<circle cx="9" cy="-62" r="8.5" fill="none" stroke="' + GREEN + '" stroke-width="4.5"/>' +
+        '<path d="M 1,-30 L 16,-24 L 20,-2" stroke="' + GREEN + '" stroke-width="5.5" fill="none" stroke-linecap="round"/>' +
+        '<path d="M 3,-52 L 14,-40 L 16,-26" stroke="' + GREEN + '" stroke-width="4.5" fill="none" stroke-linecap="round"/>' +
+        '<path d="M -4,-71 L 14,-71 L 9,-60 Z" fill="' + GREEN + '"/>' +
+        '</g>';
+      g += '<circle cx="240" cy="180" r="6" fill="' + AMBER + '" opacity=".8"/>';
+      // bars slam from above
+      var bars = '';
+      for (var x = 232; x <= 418; x += 26) bars += '<line x1="' + x + '" y1="30" x2="' + x + '" y2="190" stroke="#9fdca4" stroke-width="4"/>';
+      bars += '<line x1="215" y1="34" x2="425" y2="34" stroke="#9fdca4" stroke-width="5"/>';
+      g += (anim ? '<g class="mf-bars">' : '<g>') + bars + '</g>';
+      // clank spark
+      if (anim) g += '<circle cx="320" cy="188" r="3" fill="' + AMBER + '" class="mf-clank"/>';
+      return '<svg ' + NS + ' viewBox="0 0 640 220" class="scene-svg">' + g + '</svg>';
+    },
+
+    /* LOSE — the seaplane gets away at dawn. */
+    lose: function (anim) {
+      var g = '<line x1="0" y1="150" x2="640" y2="150" stroke="' + DIM + '" stroke-width="2"/>' +
+        '<line x1="0" y1="156" x2="640" y2="156" stroke="' + DIM + '" stroke-width="1.5" stroke-dasharray="30 40" opacity=".7"' +
+        (anim ? ' class="mf-wake"' : '') + '/>' +
+        '<circle cx="560" cy="140" r="22" fill="none" stroke="' + AMBER + '" stroke-width="2" opacity=".55"/>';
+      g += mover('mf-plane', anim, '', '-40,120') +
+        '<path d="M -52,-14 L 34,-14 Q 52,-10 46,-2 L -46,-2 Q -58,-6 -52,-14 Z" fill="none" stroke="' + GREEN + '" stroke-width="3"/>' +
+        '<line x1="-20" y1="-14" x2="-20" y2="-42" stroke="' + GREEN + '" stroke-width="3"/>' +
+        '<line x1="-46" y1="-42" x2="26" y2="-42" stroke="' + GREEN + '" stroke-width="4"/>' +
+        '<line x1="-20" y1="-42" x2="-34" y2="-16" stroke="' + GREEN + '" stroke-width="2"/>' +
+        '<line x1="-20" y1="-42" x2="-6" y2="-16" stroke="' + GREEN + '" stroke-width="2"/>' +
+        '<path d="M -52,-12 L -70,-30 L -46,-22 Z" fill="none" stroke="' + GREEN + '" stroke-width="3"/>' +
+        '<line x1="46" y1="-8" x2="46" y2="-30" stroke="' + AMBER + '" stroke-width="2.5"' + (anim ? ' class="mf-prop"' : '') + '/>' +
+        '<rect x="-40" y="6" width="44" height="6" rx="3" fill="none" stroke="' + GREEN + '" stroke-width="2.5"/>' +
+        '<line x1="-30" y1="-2" x2="-30" y2="6" stroke="' + GREEN + '" stroke-width="2"/>' +
+        '<line x1="-6" y1="-2" x2="-6" y2="6" stroke="' + GREEN + '" stroke-width="2"/>' +
+        // open door + tiny waving thief
+        '<circle cx="20" cy="-9" r="3.5" fill="none" stroke="' + AMBER + '" stroke-width="2"/>' +
+        '<line x1="20" y1="-5" x2="20" y2="2" stroke="' + AMBER + '" stroke-width="2.5"/>' +
+        '<g transform="translate(20,-4)"><g class="' + (anim ? 'mf-wave' : '') + '"><line x1="0" y1="0" x2="9" y2="-8" stroke="' + AMBER + '" stroke-width="2" stroke-linecap="round"/></g></g>' +
+        // contrail puffs
+        '<circle cx="60" cy="-22" r="4" fill="' + GREEN + '"' + (anim ? ' class="mf-puff1"' : ' opacity=".25"') + '/>' +
+        '<circle cx="76" cy="-16" r="3" fill="' + GREEN + '"' + (anim ? ' class="mf-puff2"' : ' opacity=".18"') + '/>' +
+        '</g>';
+      return '<svg ' + NS + ' viewBox="0 0 640 220" class="scene-svg">' + g + '</svg>';
+    },
+
+    /* arrival stinger: hooded thief crossing a lamplit street */
+    walk: function (anim) {
+      var g = '<line x1="0" y1="104" x2="320" y2="104" stroke="' + DIM + '" stroke-width="2"/>' +
+        '<line x1="250" y1="104" x2="250" y2="40" stroke="' + DIM + '" stroke-width="3"/>' +
+        '<circle cx="250" cy="36" r="5" fill="' + AMBER + '" opacity=".8"/>' +
+        '<circle cx="250" cy="36" r="14" fill="' + AMBER + '" opacity=".12"/>';
+      g += mover('mf-walk-thief', anim, '', '150,104') +
+        figure(anim, { thief: true, c: GREEN, still: !anim, dur: '.34s' }) + '</g>';
+      return '<svg ' + NS + ' viewBox="0 0 320 120" class="scene-svg scene-walk">' + g + '</svg>';
+    }
+  };
+
+  root.SVG_SCENES = {
+    chains: {
+      win: [['run', 2000, 'bassHit'], ['chase', 2600, 'siren'], ['surround', 2300], ['jail', 2500]],
+      lose: [['lose', 3000]]
+    },
+    render: function (host, id, opts) {
+      opts = opts || {};
+      var anim = opts.anim !== false;
+      if (!scenes[id]) return;
+      host.innerHTML = scenes[id](anim);
+    }
+  };
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>
 /* engine.js — pure game logic, no DOM. Shared by the browser UI and the
    node simulation harness (tools/simulate.js).
    Everything random is derived from the day-seed deterministically, so every
@@ -2732,17 +3017,70 @@ pre.ascii-art.map-art {
 
   function playArrival() {
     const host = $('#city-art');
-    if (!host || !Art.pack('thief-walk')) return;
+    if (!host || (!Art.pack('thief-walk') && !root.SVG_SCENES)) return;
     host.innerHTML = '';
     Audio.arrive();
+    if (root.SVG_SCENES) {
+      var reduced = root.matchMedia && root.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      host.innerHTML = '';
+      root.SVG_SCENES.render(host, 'walk', { anim: !reduced });
+      setTimeout(function () { host.innerHTML = ''; }, reduced ? 900 : 2600);
+      return;
+    }
+    if (!Art.pack('thief-walk')) return;
     const h = Art.play(host, 'thief-walk', { onDone: function () { host.innerHTML = ''; } });
     // loop pack — let the thief stride for a moment, then clear
     setTimeout(function () { h.skip(); }, 2600);
   }
 
+  /* SVG cutscene driver: wall-clock chained scenes with skip + watchdog. */
+  function playSvgCutscene(kind, onEnd) {
+    const overlay = document.createElement('div');
+    overlay.className = 'art-overlay svg-overlay';
+    const host = el('div', 'scene-host');
+    overlay.appendChild(host);
+    const hint = document.createElement('div');
+    hint.className = 'skip-hint';
+    hint.textContent = '[ click or press any key to skip ]';
+    document.body.appendChild(overlay);
+    document.body.appendChild(hint);
+    const reduced = root.matchMedia && root.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const chain = root.SVG_SCENES.chains[kind];
+    const total = chain.reduce(function (s, c) { return s + c[1]; }, 0);
+    if (kind === 'win') Audio.musicStart('chase');
+    let ended = false, timer = null;
+    function end() {
+      if (ended) return;
+      ended = true;
+      clearTimeout(timer);
+      clearTimeout(watchdog);
+      document.removeEventListener('keydown', end, true);
+      overlay.removeEventListener('click', end, true);
+      if (kind === 'win') { Audio.musicStop(); Audio.jail(); }
+      overlay.remove();
+      hint.remove();
+      onEnd();
+    }
+    const watchdog = setTimeout(end, (reduced ? 700 : total) + 3500);
+    overlay.addEventListener('click', end, true);
+    document.addEventListener('keydown', end, true);
+    const start = Date.now();
+    (function step(i) {
+      if (ended || i >= chain.length) { end(); return; }
+      const sc = chain[i];
+      const ms = (reduced ? Math.min(sc[1], 700) : sc[1]);
+      const elapsed = Date.now() - start;
+      root.SVG_SCENES.render(host, sc[0], { anim: !reduced });
+      if (sc[2] && Audio[sc[2]]) Audio[sc[2]]();
+      const remain = Math.max(120, ms - Math.max(0, elapsed - chain.slice(0, i).reduce(function (s, c) { return s + c[1]; }, 0)));
+      timer = setTimeout(function () { step(i + 1); }, reduced ? 700 : ms);
+    })(0);
+  }
+
   function playArrestSequence(packId, withChase, onEnd) {
-    if (!Art.pack(packId)) { onEnd(); return; }
     if (document.querySelector('.art-overlay')) { onEnd(); return; } // never double-play
+    if (root.SVG_SCENES) { playSvgCutscene(withChase ? 'win' : 'lose', onEnd); return; }
+    if (!Art.pack(packId)) { onEnd(); return; }
     const overlay = document.createElement('div');
     overlay.className = 'art-overlay';
     const hint = document.createElement('div');
@@ -3187,63 +3525,91 @@ pre.ascii-art.map-art {
 
   function openFlights() {
     openModal('flights', '▚ Flight board — base flight 3 hrs (+ delays). 1 hr = 1 sec in the air. ▞', function (body) {
+      const mm = body.closest ? body.closest('.modal') : null;
+      if (mm) mm.classList.add('modal-wide');
+      const hasGeo = !!(root.WORLD_GEO && root.WORLD_GEO.d);
+      let mode = U.Store.get('boardMode', 'map');
+      if (!hasGeo) mode = 'list';
+      let selected = null;
+
+      const toggle = el('div', 'flight-toggle');
+      const btnMap = el('button', 'btn', '▦ WORLD MAP');
+      const btnList = el('button', 'btn', '☰ BY REGION');
+      toggle.appendChild(btnMap);
+      toggle.appendChild(btnList);
+      body.appendChild(toggle);
+
       const mapHost = el('div', 'map-panel');
-      if (root.WORLD_GEO && root.WORLD_GEO.d) {
-        // ---- map is the board: click a labelled marker, confirm, depart ----
-        body.appendChild(mapHost);
-        const bar = el('div', 'flight-bar');
-        body.appendChild(bar);
-        let selected = null;
-        function draw() {
-          buildWorldSvg(mapHost, {
-            hereId: game.locationId,
-            targetId: selected,
-            interactive: true,
-            onPick: function (id) {
-              selected = id; Audio.click();
-              draw(); updateBar();
-            }
-          });
-        }
-        function updateBar() {
-          bar.innerHTML = '';
-          if (!selected) {
-            bar.appendChild(el('span', 'dim', 'SELECT A CITY MARKER ON THE MAP.'));
-            return;
-          }
-          const c = E.CITY_BY_ID[selected];
-          bar.appendChild(el('span', 'cyan', 'DESTINATION: ' + c.name + ', ' + c.country));
-          const dep = el('button', 'btn amber-btn', 'DEPART (3-7 HRS)');
-          dep.onclick = function () { travelTo(selected); };
-          const cancel = el('button', 'btn', 'CANCEL');
-          cancel.onclick = function () { selected = null; Audio.click(); draw(); updateBar(); };
-          bar.appendChild(dep);
-          bar.appendChild(cancel);
-        }
-        draw();
-        updateBar();
-        return;
-      }
-      // ---- fallback without SVG geometry: ASCII map + button list ----
-      renderFlightMap(mapHost, game.locationId, null);
+      const listHost = el('div', 'region-list');
       body.appendChild(mapHost);
-      body.appendChild(el('p', 'dim', '@ = your position   * = bureau bases   Click a city to depart.'));
-      const regions = {};
-      root.CITIES.forEach(c => { (regions[c.region] = regions[c.region] || []).push(c); });
-      Object.keys(regions).sort().forEach(region => {
-        const g = el('div', 'region-group');
-        g.appendChild(el('div', 'region-name', '— ' + region + ' —'));
-        const row = el('div', 'city-buttons');
-        regions[region].forEach(c => {
-          const here = c.id === game.locationId;
-          const b = el('button', 'btn' + (here ? ' here' : ''), c.name + (here ? ' ◄ HERE' : ''));
-          b.disabled = here;
-          b.onclick = function () { travelTo(c.id); };
-          row.appendChild(b);
+      body.appendChild(listHost);
+      const bar = el('div', 'flight-bar');
+      body.appendChild(bar);
+
+      function pick(id) { selected = id; Audio.click(); show(); }
+
+      function drawMap() {
+        buildWorldSvg(mapHost, {
+          hereId: game.locationId,
+          targetId: selected,
+          interactive: true,
+          onPick: pick
         });
-        g.appendChild(row);
-        body.appendChild(g);
-      });
+      }
+
+      function drawList() {
+        listHost.innerHTML = '';
+        if (!hasGeo) { renderFlightMap(mapHost, game.locationId, selected); }
+        const regions = {};
+        root.CITIES.forEach(c => { (regions[c.region] = regions[c.region] || []).push(c); });
+        Object.keys(regions).sort().forEach(region => {
+          const g = el('div', 'region-group');
+          g.appendChild(el('div', 'region-name', '— ' + region + ' —'));
+          const row = el('div', 'city-buttons');
+          regions[region].forEach(c => {
+            const here = c.id === game.locationId;
+            const b = el('button', 'btn' + (here ? ' here' : '') + (c.id === selected ? ' sel' : ''),
+              c.name + (here ? ' ◄ HERE' : ''));
+            b.disabled = here;
+            b.onclick = function () { pick(c.id); };
+            row.appendChild(b);
+          });
+          g.appendChild(row);
+          listHost.appendChild(g);
+        });
+      }
+
+      function updateBar() {
+        bar.innerHTML = '';
+        if (!selected) {
+          bar.appendChild(el('span', 'dim', hasGeo && mode === 'map'
+            ? 'SELECT A CITY — MARKER ON THE MAP OR BUTTON IN THE LIST.'
+            : 'SELECT A DESTINATION.'));
+          return;
+        }
+        const c = E.CITY_BY_ID[selected];
+        bar.appendChild(el('span', 'cyan', 'DESTINATION: ' + c.name + ', ' + c.country));
+        const dep = el('button', 'btn amber-btn', 'DEPART (3-7 HRS)');
+        dep.onclick = function () { travelTo(selected); };
+        const cancel = el('button', 'btn', 'CANCEL');
+        cancel.onclick = function () { selected = null; Audio.click(); show(); };
+        bar.appendChild(dep);
+        bar.appendChild(cancel);
+      }
+
+      function show() {
+        const isMap = mode === 'map';
+        mapHost.classList.toggle('hidden', !isMap && hasGeo); // ASCII map rides above the list in no-geo mode
+        listHost.classList.toggle('hidden', isMap);
+        btnMap.classList.toggle('sel', isMap);
+        btnList.classList.toggle('sel', !isMap);
+        if (isMap) drawMap(); else drawList();
+        updateBar();
+      }
+
+      btnMap.onclick = function () { if (!hasGeo) { Audio.deny(); return; } mode = 'map'; U.Store.set('boardMode', 'map'); Audio.click(); show(); };
+      btnList.onclick = function () { mode = 'list'; U.Store.set('boardMode', 'list'); Audio.click(); show(); };
+      show();
     });
   }
 
@@ -3689,7 +4055,8 @@ pre.ascii-art.map-art {
     init, startCase, beginPursuit, toTitle, finishGame,
     get game() { return game; },
     get modal() { return modalId; },
-    openInterview, openFlights, openCaseBoard, openNotes, openArrest
+    openInterview, openFlights, openCaseBoard, openNotes, openArrest,
+    playArrestSequence  // QA: force-preview a cutscene chain
   };
 })(typeof window !== 'undefined' ? window : globalThis);
 
