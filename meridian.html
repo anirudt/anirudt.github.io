@@ -433,6 +433,11 @@ pre.ascii-art {
 @keyframes mf-prop { 0% { opacity: 1; } 50% { opacity: .15; } 100% { opacity: 1; } }
 @keyframes mf-puff { from { opacity: .3; } to { opacity: 0; } }
 
+/* wire-stamp captions */
+.scene-svg .scene-cap { font-family: 'VT323', 'Courier New', monospace; font-size: 13px;
+  letter-spacing: 3px; fill: #8fbf94; }
+.scene-svg .scene-cap.st { fill: #b99a55; letter-spacing: 2px; }
+
 /* scrolling ground/wake */
 .scene-svg .mf-dash3 { animation: mf-dash .3s linear infinite; }
 .scene-svg .mf-dash22 { animation: mf-dash .22s linear infinite; }
@@ -442,23 +447,23 @@ pre.ascii-art {
 
 /* movers: wall-clock CSS transitions of position (fill both = frozen ends) */
 .scene-svg .mf-run-thief { animation: mf-run-move 1.7s cubic-bezier(.12,.8,.3,1) both; }
-@keyframes mf-run-move { from { transform: translate(-80px, 150px); } to { transform: translate(500px, 150px); } }
+@keyframes mf-run-move { from { transform: translate(-80px, 188px); } to { transform: translate(500px, 188px); } }
 .scene-svg .mf-chase-thief { animation: mf-chase-th 2.4s cubic-bezier(.12,.8,.3,1) both; }
-@keyframes mf-chase-th { from { transform: translate(420px, 150px); } to { transform: translate(545px, 150px); } }
+@keyframes mf-chase-th { from { transform: translate(420px, 188px); } to { transform: translate(545px, 188px); } }
 .scene-svg .mf-chase-cop1 { animation: mf-chase-c1 2.4s cubic-bezier(.12,.8,.3,1) both; }
-@keyframes mf-chase-c1 { from { transform: translate(150px, 150px); } to { transform: translate(275px, 150px); } }
+@keyframes mf-chase-c1 { from { transform: translate(150px, 188px); } to { transform: translate(275px, 188px); } }
 .scene-svg .mf-chase-cop2 { animation: mf-chase-c2 2.4s cubic-bezier(.12,.8,.3,1) both; }
-@keyframes mf-chase-c2 { from { transform: translate(80px, 150px); } to { transform: translate(225px, 150px); } }
+@keyframes mf-chase-c2 { from { transform: translate(80px, 188px); } to { transform: translate(225px, 188px); } }
 .scene-svg .mf-sur-thief { animation: mf-sur-th .9s cubic-bezier(.12,.8,.3,1) both; }
-@keyframes mf-sur-th { from { transform: translate(240px, 150px); } to { transform: translate(310px, 150px); } }
+@keyframes mf-sur-th { from { transform: translate(240px, 188px); } to { transform: translate(310px, 188px); } }
 .scene-svg .mf-copL { animation: mf-copl 1.2s cubic-bezier(.12,.8,.3,1) both; }
-@keyframes mf-copl { from { transform: translate(60px, 150px); } to { transform: translate(150px, 150px); } }
+@keyframes mf-copl { from { transform: translate(60px, 188px); } to { transform: translate(150px, 188px); } }
 .scene-svg .mf-copR { animation: mf-copr 1.3s cubic-bezier(.12,.8,.3,1) both; }
-@keyframes mf-copr { from { transform: translate(600px, 150px); } to { transform: translate(510px, 150px); } }
+@keyframes mf-copr { from { transform: translate(600px, 188px); } to { transform: translate(510px, 188px); } }
 .scene-svg .mf-plane { animation: mf-flyby 2.7s linear both; }
 @keyframes mf-flyby { from { transform: translate(700px, 120px); } to { transform: translate(-160px, 120px); } }
 .scene-svg .mf-walk-thief { animation: mf-walk 2.3s linear both; }
-@keyframes mf-walk { from { transform: translate(-40px, 104px); } to { transform: translate(320px, 104px); } }
+@keyframes mf-walk { from { transform: translate(-40px, 102px); } to { transform: translate(320px, 102px); } }
 
 /* surround beats: spotlight, hands up, sack drop */
 .scene-svg .mf-spot { transform-box: fill-box; transform-origin: 50% 50%;
@@ -543,7 +548,7 @@ pre.ascii-art.map-art {
 </style>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='14' font-size='14'>🧭</text></svg>">
 <script>window.MF_CONFIG = { gameUrl: "https://anirudt.github.io/meridian.html" };</script>
-<!--MF-BUILD:1207cc4-->
+<!--MF-BUILD:0483fed-->
 </head>
 <body>
 <div id="app">
@@ -2230,175 +2235,185 @@ pre.ascii-art.map-art {
 </script>
 <script>
 /* art/svg-scenes.js — SVG cutscenes for the arrest sequence and the
-   arrival thief-walk. Motion is CSS keyframes (NOT SMIL: the Hermes
-   Chromium build has SMIL disabled; CSS animates everywhere and honors
-   prefers-reduced-motion). ui.js falls back to the ASCII ArtPlayer when
-   this module is absent.
-   Style: stroke-based stick figures, round caps, CGA colors:
-   thief = green trench + amber sack, cops = cyan caps w/ siren lamps. */
+   arrival thief-walk. Motion is CSS keyframes (NOT SMIL: the Hermes QA
+   Chromium has SMIL disabled). Aesthetic: noir silhouettes on phosphor —
+   filled trench/fedora shapes, restrained siren light bars, letterboxed
+   frames with wire-stamp captions. ui.js falls back to ASCII packs when
+   this module is absent. */
 (function (root) {
   'use strict';
 
-  var GREEN = '#55ff55', CYAN = '#55ffff', AMBER = '#ffb000',
-      RED = '#ff6b5e', BLUE = '#559bff', DIM = '#2f5f34';
+  var GREEN = '#41b04c', CYAN = '#41b8c6', AMBER = '#ffb000',
+      RED = '#d96a5f', BLUE = '#5f9fd9', DIM = '#245028', HAIR = '#2f6b38';
   var NS = 'xmlns="http://www.w3.org/2000/svg"';
 
-  /* A running stick figure, origin at feet, facing right.
-     opts: thief (hood+sack), cop (cap+siren), still (planted pose),
-     dur (cycle length), cls (extra classes on the root g). */
+  /* Silhouette figure, origin at feet, facing right.
+     opts: thief (fedora + trench + sack), cop (peaked cap + badge + light
+     bar), still (planted pose), dur (cycle length). */
   function figure(anim, opts) {
     opts = opts || {};
     var cyc = anim && !opts.still;
     var d = opts.dur || '.26s';
     var style = cyc ? ' style="--cyc:' + d + '"' : '';
-    var legs = '', arms = '';
+    var c = opts.c;
     function leg(cls, x2) {
-      return '<g transform="translate(0,-34)"><g class="' + cls + '"' + style + '>' +
-        '<line x1="0" y1="0" x2="' + x2 + '" y2="34" stroke-width="5.5" stroke="' + opts.c + '" stroke-linecap="round"/></g></g>';
+      return '<g transform="translate(0,-30)"><g class="' + cls + '"' + style + '>' +
+        '<line x1="0" y1="0" x2="' + x2 + '" y2="30" stroke-width="6.5" stroke="' + c + '" stroke-linecap="round"/></g></g>';
     }
     function arm(cls, x2, y2) {
-      return '<g transform="translate(3,-60)"><g class="' + cls + '"' + style + '>' +
-        '<line x1="0" y1="0" x2="' + x2 + '" y2="' + y2 + '" stroke-width="4.5" stroke="' + opts.c + '" stroke-linecap="round"/></g></g>';
+      return '<g transform="translate(2,-56)"><g class="' + cls + '"' + style + '>' +
+        '<line x1="0" y1="0" x2="' + x2 + '" y2="' + y2 + '" stroke-width="5" stroke="' + c + '" stroke-linecap="round"/></g></g>';
     }
-    legs = leg(cyc ? 'mf-legf' : '', 8) + leg(cyc ? 'mf-legb' : '', -6);
-    arms = arm(cyc ? 'mf-armb' : '', -10, 24);
+    var legs = leg(cyc ? 'mf-legf' : '', 7) + leg(cyc ? 'mf-legb' : '', -7);
+    var arms = arm(cyc ? 'mf-armb' : '', -8, 22);
+    var body, head, gear = '';
     if (opts.thief) {
-      // front arm clutching the sack (static) + hood + sack
-      arms += '<line x1="3" y1="-60" x2="17" y2="-47" stroke-width="4.5" stroke="' + opts.c + '" stroke-linecap="round"/>' +
-        '<circle cx="19" cy="-44" r="6.5" fill="' + AMBER + '"/>' +
-        '<path d="M -4,-80 L 14,-80 L 5,-67 Z" fill="' + opts.c + '"/>';
-    }
-    if (opts.cop) {
-      arms += '<rect x="-3" y="-83" width="16" height="5" fill="' + opts.c + '"/>' +
-        '<line x1="13" y1="-78" x2="21" y2="-78" stroke-width="3" stroke="' + opts.c + '"/>' +
-        '<line x1="5" y1="-83" x2="5" y2="-88" stroke="' + opts.c + '" stroke-width="2"/>' +
-        '<circle cx="1" cy="-92" r="3.2" fill="' + RED + '" class="' + (anim ? 'mf-sr' : '') + '"/>' +
-        '<circle cx="9" cy="-92" r="3.2" fill="' + BLUE + '" class="' + (anim ? 'mf-sb' : '') + '"/>';
+      body = '<path d="M -8,-58 L 9,-58 L 14,-26 L -10,-26 Z" fill="' + c + '"/>';
+      head = '<circle cx="4" cy="-65" r="6" fill="' + c + '"/>';
+      gear = '<path d="M -2,-70 L 15,-70 L 15,-72 L -2,-72 Z" fill="' + c + '"/>' +
+        '<path d="M 1,-79 L 11,-79 L 12,-72 L 0,-72 Z" fill="' + c + '"/>';
+      arms += '<line x1="2" y1="-56" x2="16" y2="-44" stroke-width="5" stroke="' + c + '" stroke-linecap="round"/>' +
+        (opts.nosack ? '' : '<circle cx="18" cy="-41" r="6" fill="' + AMBER + '"/>');
+    } else {
+      body = '<path d="M -7,-56 L 9,-56 L 11,-26 L -9,-26 Z" fill="' + c + '"/>';
+      head = '<circle cx="4" cy="-63" r="5.5" fill="' + c + '"/>';
+      gear = '<path d="M -2,-68 L 11,-68 L 12,-73 L -1,-73 Z" fill="' + c + '"/>' +
+        '<path d="M 10,-69 L 19,-67 L 19,-65.5 L 10,-67 Z" fill="' + c + '"/>' +
+        '<circle cx="7" cy="-50" r="1.6" fill="' + AMBER + '" opacity=".9"/>' +
+        '<rect x="1" y="-78" width="10" height="2.6" fill="#123238"/>' +
+        '<rect x="1.6" y="-77.4" width="4" height="1.6" fill="' + RED + '" class="' + (anim ? 'mf-sr' : '') + '"/>' +
+        '<rect x="6.6" y="-77.4" width="4" height="1.6" fill="' + BLUE + '" class="' + (anim ? 'mf-sb' : '') + '"/>';
     }
     var bobOpen = cyc ? '<g class="mf-bob"' + style + '>' : '<g>';
-    return bobOpen +
-      '<path d="M 0,-34 L 3,-62" stroke="' + opts.c + '" stroke-width="7" stroke-linecap="round"/>' +
-      '<circle cx="5" cy="-71" r="8.5" fill="none" stroke="' + opts.c + '" stroke-width="4.5"/>' +
-      legs + arms + '</g>';
+    return bobOpen + body + head + gear + legs + arms + '</g>';
   }
 
-  function mover(cls, anim, from, to) {
-    // animated: CSS class drives transform; static: attribute at final pose
+  function mover(cls, anim, to) {
     return anim ? '<g class="' + cls + '">' : '<g transform="translate(' + to + ')">';
   }
 
   function ground(y, scrollCls) {
-    return '<line x1="0" y1="' + y + '" x2="640" y2="' + y + '" stroke="' + DIM + '" stroke-width="2"/>' +
-      '<line x1="-40" y1="' + (y + 9) + '" x2="680" y2="' + (y + 9) +
-      '" stroke="' + DIM + '" stroke-width="2" stroke-dasharray="16 26"' +
+    return '<line x1="0" y1="' + y + '" x2="640" y2="' + y + '" stroke="' + HAIR + '" stroke-width="1"/>' +
+      '<line x1="-40" y1="' + (y + 8) + '" x2="680" y2="' + (y + 8) +
+      '" stroke="' + HAIR + '" stroke-width="1" stroke-dasharray="18 30"' +
       (scrollCls ? ' class="' + scrollCls + '"' : '') + '/>';
+  }
+
+  /* letterbox + wire caption: the chic frame around every beat */
+  function frame(caption, stamp) {
+    return '<rect x="0" y="0" width="640" height="16" fill="#020903"/>' +
+      '<rect x="0" y="204" width="640" height="16" fill="#020903"/>' +
+      '<line x1="0" y1="16.5" x2="640" y2="16.5" stroke="' + HAIR + '" stroke-width=".6"/>' +
+      '<line x1="0" y1="203.5" x2="640" y2="203.5" stroke="' + HAIR + '" stroke-width=".6"/>' +
+      '<text x="16" y="216" class="scene-cap">' + caption + '</text>' +
+      '<text x="624" y="216" text-anchor="end" class="scene-cap st">' + stamp + '</text>';
+  }
+
+  function svgOpen() {
+    return '<svg ' + NS + ' viewBox="0 0 640 220" class="scene-svg">';
   }
 
   var scenes = {
 
-    /* 1. THE RUN — thief bolts for the exit. */
+    /* 1. THE GETAWAY */
     run: function (anim) {
-      return '<svg ' + NS + ' viewBox="0 0 640 220" class="scene-svg">' +
-        ground(190, anim ? 'mf-dash3' : '') +
-        '<line x1="60" y1="118" x2="150" y2="118" stroke="' + GREEN + '" stroke-width="2" class="' + (anim ? 'mf-spark1' : '') + '" opacity=".4"/>' +
-        '<line x1="40" y1="140" x2="120" y2="140" stroke="' + GREEN + '" stroke-width="2" class="' + (anim ? 'mf-spark2' : '') + '" opacity=".3"/>' +
-        mover('mf-run-thief', anim, '', '500,150') +
-        figure(anim, { thief: true, c: GREEN, still: !anim }) + '</g></svg>';
+      var g = frame('THE GETAWAY', '0347 HRS') + ground(188, anim ? 'mf-dash3' : '');
+      g += '<line x1="70" y1="120" x2="150" y2="120" stroke="' + GREEN + '" stroke-width="1.5" class="' + (anim ? 'mf-spark1' : '') + '" opacity=".3"/>' +
+        '<line x1="50" y1="142" x2="120" y2="142" stroke="' + GREEN + '" stroke-width="1.5" class="' + (anim ? 'mf-spark2' : '') + '" opacity=".2"/>';
+      g += mover('mf-run-thief', anim, '500,188') +
+        figure(anim, { thief: true, c: GREEN, still: !anim }) + '</g>';
+      return svgOpen() + g + '</svg>';
     },
 
-    /* 2. THE CHASE — two officers on his tail, sirens flashing. */
+    /* 2. PURSUIT */
     chase: function (anim) {
-      var g = ground(190, anim ? 'mf-dash22' : '');
-      g += mover('mf-chase-thief', anim, '', '545,150') + figure(anim, { thief: true, c: GREEN, still: !anim }) + '</g>';
-      g += mover('mf-chase-cop1', anim, '', '275,150') + figure(anim, { cop: true, c: CYAN, still: !anim }) + '</g>';
-      g += mover('mf-chase-cop2', anim, '', '225,150') + figure(anim, { cop: true, c: CYAN, still: !anim, dur: '.3s' }) + '</g>';
-      return '<svg ' + NS + ' viewBox="0 0 640 220" class="scene-svg">' + g + '</svg>';
+      var g = frame('PURSUIT', '0348 HRS') + ground(188, anim ? 'mf-dash22' : '');
+      g += mover('mf-chase-thief', anim, '545,188') + figure(anim, { thief: true, c: GREEN, still: !anim }) + '</g>';
+      g += mover('mf-chase-cop1', anim, '275,188') + figure(anim, { cop: true, c: CYAN, still: !anim }) + '</g>';
+      g += mover('mf-chase-cop2', anim, '225,188') + figure(anim, { cop: true, c: CYAN, still: !anim, dur: '.3s' }) + '</g>';
+      return svgOpen() + g + '</svg>';
     },
 
-    /* 3. THE SURROUND — cornered; coppers close in, spotlight drops. */
+    /* 3. CORNERED */
     surround: function (anim) {
-      var g = ground(190, null);
-      // spotlight ellipse (scaleX-in when animated)
-      g += '<ellipse cx="320" cy="188" rx="95" ry="9" fill="' + AMBER + '"' +
-        (anim ? ' opacity="0" class="mf-spot"' : ' opacity=".3"') + '/>';
-      // thief skids to a halt
-      g += mover('mf-sur-thief', anim, '', '310,150') +
-        figure(anim, { thief: true, c: GREEN, still: true }) +
+      var g = frame('CORNERED', '0349 HRS') + ground(188, null);
+      g += '<ellipse cx="320" cy="186" rx="95" ry="8" fill="' + AMBER + '"' +
+        (anim ? ' opacity="0" class="mf-spot"' : ' opacity=".22"') + '/>';
+      g += mover('mf-sur-thief', anim, '310,188') +
+        figure(anim, { thief: true, c: GREEN, still: true, nosack: true }) +
         (anim
-          ? '<circle cx="19" cy="-44" r="6.5" fill="' + AMBER + '" class="mf-hand-sack"/>' +
+          ? '<circle cx="18" cy="-41" r="6" fill="' + AMBER + '" class="mf-hand-sack"/>' +
             '<g class="mf-arms">' +
-            '<line x1="3" y1="-60" x2="-16" y2="-84" stroke="' + GREEN + '" stroke-width="4.5" stroke-linecap="round"/>' +
-            '<line x1="3" y1="-60" x2="22" y2="-84" stroke="' + GREEN + '" stroke-width="4.5" stroke-linecap="round"/></g>' +
-            '<circle cx="16" cy="32" r="6.5" fill="' + AMBER + '" class="mf-ground-sack"/>'
+            '<line x1="2" y1="-56" x2="-14" y2="-80" stroke="' + GREEN + '" stroke-width="5" stroke-linecap="round"/>' +
+            '<line x1="2" y1="-56" x2="18" y2="-80" stroke="' + GREEN + '" stroke-width="5" stroke-linecap="round"/></g>' +
+            '<circle cx="16" cy="-4" r="6" fill="' + AMBER + '" class="mf-ground-sack"/>'
           : '<g>' +
-            '<line x1="3" y1="-60" x2="-16" y2="-84" stroke="' + GREEN + '" stroke-width="4.5" stroke-linecap="round"/>' +
-            '<line x1="3" y1="-60" x2="22" y2="-84" stroke="' + GREEN + '" stroke-width="4.5" stroke-linecap="round"/></g>') +
+            '<line x1="2" y1="-56" x2="-14" y2="-80" stroke="' + GREEN + '" stroke-width="5" stroke-linecap="round"/>' +
+            '<line x1="2" y1="-56" x2="18" y2="-80" stroke="' + GREEN + '" stroke-width="5" stroke-linecap="round"/></g>' +
+            '<circle cx="16" cy="-4" r="6" fill="' + AMBER + '"/>') +
         '</g>';
-      // cops close in from both sides
-      g += mover('mf-copL', anim, '', '150,150') + figure(anim, { cop: true, c: CYAN, still: !anim }) + '</g>';
-      g += mover('mf-copR', anim, '', '510,150') +
-        '<g transform="scale(-1,1) translate(-30,0)">' + figure(anim, { cop: true, c: CYAN, still: !anim, dur: '.3s' }) + '</g></g>';
-      return '<svg ' + NS + ' viewBox="0 0 640 220" class="scene-svg">' + g + '</svg>';
+      g += mover('mf-copL', anim, '150,188') + figure(anim, { cop: true, c: CYAN, still: !anim }) + '</g>';
+      g += mover('mf-copR', anim, '510,188') +
+        '<g transform="scale(-1,1) translate(-26,0)">' + figure(anim, { cop: true, c: CYAN, still: !anim, dur: '.3s' }) + '</g></g>';
+      return svgOpen() + g + '</svg>';
     },
 
-    /* 4. THE JAIL — bars slam down around him. */
+    /* 4. BOOKED */
     jail: function (anim) {
-      var g = '<rect x="215" y="26" width="210" height="166" fill="none" stroke="' + DIM + '" stroke-width="3"/>';
-      g += ground(192, null);
-      // slumped thief behind bars (static, seated)
-      g += '<g transform="translate(300,190)">' +
-        '<path d="M 0,-30 L 3,-56" stroke="' + GREEN + '" stroke-width="7" stroke-linecap="round"/>' +
-        '<circle cx="9" cy="-62" r="8.5" fill="none" stroke="' + GREEN + '" stroke-width="4.5"/>' +
-        '<path d="M 1,-30 L 16,-24 L 20,-2" stroke="' + GREEN + '" stroke-width="5.5" fill="none" stroke-linecap="round"/>' +
-        '<path d="M 3,-52 L 14,-40 L 16,-26" stroke="' + GREEN + '" stroke-width="4.5" fill="none" stroke-linecap="round"/>' +
-        '<path d="M -4,-71 L 14,-71 L 9,-60 Z" fill="' + GREEN + '"/>' +
+      var g = frame('BOOKED', '0352 HRS');
+      g += '<rect x="215" y="26" width="210" height="162" fill="none" stroke="' + HAIR + '" stroke-width="1.5"/>';
+      g += ground(188, null);
+      // slumped silhouette, fedora on the floor beside him
+      g += '<g transform="translate(302,188)">' +
+        '<path d="M -6,-46 L 8,-48 L 12,-22 L -8,-20 Z" fill="' + GREEN + '"/>' +
+        '<circle cx="10" cy="-54" r="5.5" fill="' + GREEN + '"/>' +
+        '<path d="M 2,-52 L 15,-44 L 18,-26" stroke="' + GREEN + '" stroke-width="4.5" fill="none" stroke-linecap="round"/>' +
+        '<path d="M -4,-22 L 14,-18 L 22,-2" stroke="' + GREEN + '" stroke-width="6" fill="none" stroke-linecap="round"/>' +
         '</g>';
-      g += '<circle cx="240" cy="180" r="6" fill="' + AMBER + '" opacity=".8"/>';
-      // bars slam from above
+      g += '<path d="M 268,182 L 284,182 L 284,180 L 268,180 Z" fill="' + GREEN + '" opacity=".8"/>'; // fedora, forfeited
+      g += '<circle cx="240" cy="178" r="5" fill="' + AMBER + '" opacity=".7"/>';
       var bars = '';
-      for (var x = 232; x <= 418; x += 26) bars += '<line x1="' + x + '" y1="30" x2="' + x + '" y2="190" stroke="#9fdca4" stroke-width="4"/>';
-      bars += '<line x1="215" y1="34" x2="425" y2="34" stroke="#9fdca4" stroke-width="5"/>';
+      for (var x = 232; x <= 418; x += 26) bars += '<line x1="' + x + '" y1="30" x2="' + x + '" y2="186" stroke="#7fbf8a" stroke-width="3"/>';
+      bars += '<line x1="215" y1="34" x2="425" y2="34" stroke="#7fbf8a" stroke-width="4"/>';
       g += (anim ? '<g class="mf-bars">' : '<g>') + bars + '</g>';
-      // clank spark
-      if (anim) g += '<circle cx="320" cy="188" r="3" fill="' + AMBER + '" class="mf-clank"/>';
-      return '<svg ' + NS + ' viewBox="0 0 640 220" class="scene-svg">' + g + '</svg>';
+      if (anim) g += '<circle cx="320" cy="184" r="2.5" fill="' + AMBER + '" class="mf-clank"/>';
+      return svgOpen() + g + '</svg>';
     },
 
-    /* LOSE — the seaplane gets away at dawn. */
+    /* LOSE — the seaplane gets away at dawn */
     lose: function (anim) {
-      var g = '<line x1="0" y1="150" x2="640" y2="150" stroke="' + DIM + '" stroke-width="2"/>' +
-        '<line x1="0" y1="156" x2="640" y2="156" stroke="' + DIM + '" stroke-width="1.5" stroke-dasharray="30 40" opacity=".7"' +
+      var g = frame('GONE', '0502 HRS');
+      g += '<line x1="0" y1="150" x2="640" y2="150" stroke="' + HAIR + '" stroke-width="1"/>' +
+        '<line x1="0" y1="156" x2="640" y2="156" stroke="' + HAIR + '" stroke-width="1" stroke-dasharray="30 40" opacity=".6"' +
         (anim ? ' class="mf-wake"' : '') + '/>' +
-        '<circle cx="560" cy="140" r="22" fill="none" stroke="' + AMBER + '" stroke-width="2" opacity=".55"/>';
-      g += mover('mf-plane', anim, '', '-40,120') +
-        '<path d="M -52,-14 L 34,-14 Q 52,-10 46,-2 L -46,-2 Q -58,-6 -52,-14 Z" fill="none" stroke="' + GREEN + '" stroke-width="3"/>' +
-        '<line x1="-20" y1="-14" x2="-20" y2="-42" stroke="' + GREEN + '" stroke-width="3"/>' +
-        '<line x1="-46" y1="-42" x2="26" y2="-42" stroke="' + GREEN + '" stroke-width="4"/>' +
-        '<line x1="-20" y1="-42" x2="-34" y2="-16" stroke="' + GREEN + '" stroke-width="2"/>' +
-        '<line x1="-20" y1="-42" x2="-6" y2="-16" stroke="' + GREEN + '" stroke-width="2"/>' +
-        '<path d="M -52,-12 L -70,-30 L -46,-22 Z" fill="none" stroke="' + GREEN + '" stroke-width="3"/>' +
-        '<line x1="46" y1="-8" x2="46" y2="-30" stroke="' + AMBER + '" stroke-width="2.5"' + (anim ? ' class="mf-prop"' : '') + '/>' +
-        '<rect x="-40" y="6" width="44" height="6" rx="3" fill="none" stroke="' + GREEN + '" stroke-width="2.5"/>' +
-        '<line x1="-30" y1="-2" x2="-30" y2="6" stroke="' + GREEN + '" stroke-width="2"/>' +
-        '<line x1="-6" y1="-2" x2="-6" y2="6" stroke="' + GREEN + '" stroke-width="2"/>' +
-        // open door + tiny waving thief
-        '<circle cx="20" cy="-9" r="3.5" fill="none" stroke="' + AMBER + '" stroke-width="2"/>' +
-        '<line x1="20" y1="-5" x2="20" y2="2" stroke="' + AMBER + '" stroke-width="2.5"/>' +
-        '<g transform="translate(20,-4)"><g class="' + (anim ? 'mf-wave' : '') + '"><line x1="0" y1="0" x2="9" y2="-8" stroke="' + AMBER + '" stroke-width="2" stroke-linecap="round"/></g></g>' +
-        // contrail puffs
-        '<circle cx="60" cy="-22" r="4" fill="' + GREEN + '"' + (anim ? ' class="mf-puff1"' : ' opacity=".25"') + '/>' +
-        '<circle cx="76" cy="-16" r="3" fill="' + GREEN + '"' + (anim ? ' class="mf-puff2"' : ' opacity=".18"') + '/>' +
+        '<circle cx="560" cy="138" r="20" fill="none" stroke="' + AMBER + '" stroke-width="1.5" opacity=".4"/>';
+      g += mover('mf-plane', anim, '-40,120') +
+        '<path d="M -52,-14 L 34,-14 Q 52,-10 46,-2 L -46,-2 Q -58,-6 -52,-14 Z" fill="' + GREEN + '" opacity=".9"/>' +
+        '<line x1="-20" y1="-14" x2="-20" y2="-40" stroke="' + GREEN + '" stroke-width="2.5"/>' +
+        '<line x1="-46" y1="-40" x2="26" y2="-40" stroke="' + GREEN + '" stroke-width="3.5"/>' +
+        '<line x1="-20" y1="-40" x2="-32" y2="-16" stroke="' + GREEN + '" stroke-width="1.5"/>' +
+        '<line x1="-20" y1="-40" x2="-8" y2="-16" stroke="' + GREEN + '" stroke-width="1.5"/>' +
+        '<path d="M -52,-12 L -70,-30 L -46,-22 Z" fill="' + GREEN + '"/>' +
+        '<line x1="46" y1="-8" x2="46" y2="-28" stroke="' + AMBER + '" stroke-width="2"' + (anim ? ' class="mf-prop"' : '') + '/>' +
+        '<rect x="-40" y="6" width="44" height="5" rx="2.5" fill="none" stroke="' + GREEN + '" stroke-width="2"/>' +
+        '<line x1="-30" y1="-2" x2="-30" y2="6" stroke="' + GREEN + '" stroke-width="1.5"/>' +
+        '<line x1="-6" y1="-2" x2="-6" y2="6" stroke="' + GREEN + '" stroke-width="1.5"/>' +
+        '<circle cx="20" cy="-8" r="3" fill="' + AMBER + '"/>' +
+        '<line x1="20" y1="-5" x2="20" y2="0" stroke="' + AMBER + '" stroke-width="2"/>' +
+        '<g transform="translate(20,-4)"><g class="' + (anim ? 'mf-wave' : '') + '"><line x1="0" y1="0" x2="8" y2="-7" stroke="' + AMBER + '" stroke-width="1.8" stroke-linecap="round"/></g></g>' +
+        '<circle cx="60" cy="-22" r="3.5" fill="' + GREEN + '"' + (anim ? ' class="mf-puff1"' : ' opacity=".2"') + '/>' +
+        '<circle cx="76" cy="-16" r="2.5" fill="' + GREEN + '"' + (anim ? ' class="mf-puff2"' : ' opacity=".15"') + '/>' +
         '</g>';
-      return '<svg ' + NS + ' viewBox="0 0 640 220" class="scene-svg">' + g + '</svg>';
+      return svgOpen() + g + '</svg>';
     },
 
-    /* arrival stinger: hooded thief crossing a lamplit street */
+    /* arrival stinger: thief crossing a lamplit street */
     walk: function (anim) {
-      var g = '<line x1="0" y1="104" x2="320" y2="104" stroke="' + DIM + '" stroke-width="2"/>' +
-        '<line x1="250" y1="104" x2="250" y2="40" stroke="' + DIM + '" stroke-width="3"/>' +
-        '<circle cx="250" cy="36" r="5" fill="' + AMBER + '" opacity=".8"/>' +
-        '<circle cx="250" cy="36" r="14" fill="' + AMBER + '" opacity=".12"/>';
-      g += mover('mf-walk-thief', anim, '', '150,104') +
+      var g = '<line x1="0" y1="102" x2="320" y2="102" stroke="' + HAIR + '" stroke-width="1"/>' +
+        '<line x1="252" y1="102" x2="252" y2="38" stroke="' + HAIR + '" stroke-width="2"/>' +
+        '<circle cx="252" cy="34" r="4" fill="' + AMBER + '" opacity=".7"/>' +
+        '<circle cx="252" cy="34" r="13" fill="' + AMBER + '" opacity=".08"/>';
+      g += mover('mf-walk-thief', anim, '150,102') +
         figure(anim, { thief: true, c: GREEN, still: !anim, dur: '.34s' }) + '</g>';
       return '<svg ' + NS + ' viewBox="0 0 320 120" class="scene-svg scene-walk">' + g + '</svg>';
     }
