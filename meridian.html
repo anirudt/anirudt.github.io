@@ -404,19 +404,22 @@ pre.ascii-art {
 .scene-svg * { shape-rendering: geometricPrecision; }
 #city-art .scene-svg { max-width: 320px; margin: 0 auto; }
 
-/* limb cycles — rotate around the joint (bbox top-left = hip/shoulder) */
-.scene-svg .mf-legf, .scene-svg .mf-legb, .scene-svg .mf-armb, .scene-svg .mf-wave {
-  transform-box: fill-box;
-}
-.scene-svg .mf-legf, .scene-svg .mf-armb { transform-origin: 0 0; }
-.scene-svg .mf-legb { transform-origin: 0 0; }
+/* articulated limbs — rotate around joints (bbox anchored at each joint) */
+.scene-svg .mf-thighf, .scene-svg .mf-thighb, .scene-svg .mf-shinf, .scene-svg .mf-shinb,
+.scene-svg .mf-armb, .scene-svg .mf-armb2, .scene-svg .mf-wave { transform-box: fill-box; }
+.scene-svg .mf-thighf, .scene-svg .mf-thighb, .scene-svg .mf-shinf, .scene-svg .mf-shinb,
+.scene-svg .mf-armb, .scene-svg .mf-armb2 { transform-origin: 0 0; }
 .scene-svg .mf-wave { transform-origin: 0 100%; }
-.scene-svg .mf-legf { animation: mf-legf var(--cyc, .26s) ease-in-out infinite alternate; }
-.scene-svg .mf-legb { animation: mf-legb var(--cyc, .26s) ease-in-out infinite alternate; }
-.scene-svg .mf-armb { animation: mf-legb var(--cyc, .26s) ease-in-out infinite alternate; }
+.scene-svg .mf-thighf { animation: mf-thigh var(--cyc, .26s) ease-in-out infinite alternate; }
+.scene-svg .mf-thighb { animation: mf-thigh var(--cyc, .26s) ease-in-out infinite alternate-reverse; }
+.scene-svg .mf-shinf { animation: mf-shin var(--cyc, .26s) ease-in-out infinite alternate-reverse; }
+.scene-svg .mf-shinb { animation: mf-shin var(--cyc, .26s) ease-in-out infinite alternate; }
+.scene-svg .mf-armb { animation: mf-arm var(--cyc, .26s) ease-in-out infinite alternate; }
+.scene-svg .mf-armb2 { transform: rotate(18deg); }
 .scene-svg .mf-bob { animation: mf-bob var(--cyc, .26s) ease-in-out infinite alternate; }
-@keyframes mf-legf { from { transform: rotate(-32deg); } to { transform: rotate(22deg); } }
-@keyframes mf-legb { from { transform: rotate(22deg); } to { transform: rotate(-32deg); } }
+@keyframes mf-thigh { from { transform: rotate(-40deg); } to { transform: rotate(28deg); } }
+@keyframes mf-shin { from { transform: rotate(58deg); } to { transform: rotate(2deg); } }
+@keyframes mf-arm { from { transform: rotate(-28deg); } to { transform: rotate(30deg); } }
 @keyframes mf-bob { from { transform: translateY(0); } to { transform: translateY(-3px); } }
 .scene-svg .mf-wave { animation: mf-wave .6s ease-in-out infinite alternate; }
 @keyframes mf-wave { from { transform: rotate(-70deg); } to { transform: rotate(-15deg); } }
@@ -442,6 +445,9 @@ pre.ascii-art {
 .scene-svg .mf-dash3 { animation: mf-dash .3s linear infinite; }
 .scene-svg .mf-dash22 { animation: mf-dash .22s linear infinite; }
 .scene-svg .mf-wake { animation: mf-dashw 2s linear infinite; }
+.scene-svg .mf-skyA { animation: mf-sky 6s linear infinite; }
+.scene-svg .mf-skyB { animation: mf-sky 3s linear infinite; }
+@keyframes mf-sky { to { transform: translateX(-304px); } }
 @keyframes mf-dash { to { stroke-dashoffset: -42px; } }
 @keyframes mf-dashw { to { stroke-dashoffset: 70px; } }
 
@@ -548,7 +554,7 @@ pre.ascii-art.map-art {
 </style>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='14' font-size='14'>🧭</text></svg>">
 <script>window.MF_CONFIG = { gameUrl: "https://anirudt.github.io/meridian.html" };</script>
-<!--MF-BUILD:0483fed-->
+<!--MF-BUILD:6b92e0c-->
 </head>
 <body>
 <div id="app">
@@ -2247,45 +2253,75 @@ pre.ascii-art.map-art {
       RED = '#d96a5f', BLUE = '#5f9fd9', DIM = '#245028', HAIR = '#2f6b38';
   var NS = 'xmlns="http://www.w3.org/2000/svg"';
 
-  /* Silhouette figure, origin at feet, facing right.
-     opts: thief (fedora + trench + sack), cop (peaked cap + badge + light
-     bar), still (planted pose), dur (cycle length). */
+  /* Silhouette figure, origin at feet, facing right. Two-segment legs and
+     arms (thigh->shin->foot, upper->fore->hand) so the cycle reads as a
+     body, not a stick. opts: thief (fedora + trench + sack), cop (peaked
+     cap + badge + light bar), still (planted pose), dur (cycle length). */
   function figure(anim, opts) {
     opts = opts || {};
     var cyc = anim && !opts.still;
     var d = opts.dur || '.26s';
     var style = cyc ? ' style="--cyc:' + d + '"' : '';
     var c = opts.c;
-    function leg(cls, x2) {
-      return '<g transform="translate(0,-30)"><g class="' + cls + '"' + style + '>' +
-        '<line x1="0" y1="0" x2="' + x2 + '" y2="30" stroke-width="6.5" stroke="' + c + '" stroke-linecap="round"/></g></g>';
+    var legs = '', arms = '';
+
+    function seg(clsThigh, clsShin, x2, back) {
+      var footX = back ? -6 : 7;
+      return '<g class="' + clsThigh + '"' + style + '>' +
+        '<circle cx="0" cy="0" r="0.01" fill="none"/>' +
+        '<line x1="0" y1="0" x2="' + x2 + '" y2="14" stroke-width="6.5" stroke="' + c + '" stroke-linecap="round"/>' +
+        '<g transform="translate(' + x2 + ',14)"><g class="' + clsShin + '"' + style + '>' +
+        '<circle cx="0" cy="0" r="0.01" fill="none"/>' +
+        '<line x1="0" y1="0" x2="' + (back ? -1 : 1) + '" y2="15" stroke-width="5.5" stroke="' + c + '" stroke-linecap="round"/>' +
+        '<line x1="0" y1="16" x2="' + footX + '" y2="16" stroke-width="3.5" stroke="' + c + '" stroke-linecap="round"/>' +
+        '</g></g></g>';
     }
-    function arm(cls, x2, y2) {
-      return '<g transform="translate(2,-56)"><g class="' + cls + '"' + style + '>' +
-        '<line x1="0" y1="0" x2="' + x2 + '" y2="' + y2 + '" stroke-width="5" stroke="' + c + '" stroke-linecap="round"/></g></g>';
+    if (cyc) {
+      legs = '<g transform="translate(0,-28)">' + seg('mf-thighb', 'mf-shinb', -3, true) +
+        seg('mf-thighf', 'mf-shinf', 5, false) + '</g>';
+    } else {
+      // planted: slight A-stance, feet forward
+      legs = '<g transform="translate(0,-28)">' + seg('', '', -5, true) + seg('', '', 6, false) + '</g>';
     }
-    var legs = leg(cyc ? 'mf-legf' : '', 7) + leg(cyc ? 'mf-legb' : '', -7);
-    var arms = arm(cyc ? 'mf-armb' : '', -8, 22);
+
+    function armSeg(cls, x2, hand) {
+      return '<g class="' + cls + '"' + style + '>' +
+        '<circle cx="0" cy="0" r="0.01" fill="none"/>' +
+        '<line x1="0" y1="0" x2="' + x2 + '" y2="12" stroke-width="5" stroke="' + c + '" stroke-linecap="round"/>' +
+        '<g transform="translate(' + x2 + ',12)"><g class="' + (cls ? cls + '2' : '') + '"' + style + '>' +
+        '<circle cx="0" cy="0" r="0.01" fill="none"/>' +
+        '<line x1="0" y1="0" x2="1" y2="11" stroke-width="4.2" stroke="' + c + '" stroke-linecap="round"/>' +
+        '<circle cx="1" cy="12.5" r="2.2" fill="' + c + '"/>' +
+        '</g></g></g>';
+    }
+    arms = '<g transform="translate(1,-54)">' + armSeg(cyc ? 'mf-armb' : '', -4) + '</g>';
+
     var body, head, gear = '';
     if (opts.thief) {
-      body = '<path d="M -8,-58 L 9,-58 L 14,-26 L -10,-26 Z" fill="' + c + '"/>';
-      head = '<circle cx="4" cy="-65" r="6" fill="' + c + '"/>';
-      gear = '<path d="M -2,-70 L 15,-70 L 15,-72 L -2,-72 Z" fill="' + c + '"/>' +
-        '<path d="M 1,-79 L 11,-79 L 12,-72 L 0,-72 Z" fill="' + c + '"/>';
-      arms += '<line x1="2" y1="-56" x2="16" y2="-44" stroke-width="5" stroke="' + c + '" stroke-linecap="round"/>' +
-        (opts.nosack ? '' : '<circle cx="18" cy="-41" r="6" fill="' + AMBER + '"/>');
+      // long trench: shoulders to below knees, back hem flares with the stride
+      body = '<path d="M -9,-58 L 10,-58 L 15,-18 L 9,-14 L 2,-18 L -12,-14 Z" fill="' + c + '"/>' +
+        // collar/lapel edge
+        '<path d="M 4,-58 L 9,-50 L 6,-44" stroke="#1c5e2a" stroke-width="1.5" fill="none"/>';
+      head = '<circle cx="4" cy="-66" r="6.2" fill="' + c + '"/>';
+      gear = '<path d="M -3,-71 L 16,-71 L 16,-73 L -3,-73 Z" fill="' + c + '"/>' +
+        '<path d="M 0,-80 L 12,-80 L 13,-73 L -1,-73 Z" fill="' + c + '"/>' +
+        '<line x1="-3" y1="-72" x2="-7" y2="-70" stroke="' + c + '" stroke-width="2"/>';
+      arms += '<g transform="translate(1,-54)"><line x1="0" y1="0" x2="15" y2="11" stroke-width="5" stroke="' + c + '" stroke-linecap="round"/>' +
+        (opts.nosack ? '' : '<circle cx="17" cy="14" r="6" fill="' + AMBER + '"/>') + '</g>';
     } else {
-      body = '<path d="M -7,-56 L 9,-56 L 11,-26 L -9,-26 Z" fill="' + c + '"/>';
-      head = '<circle cx="4" cy="-63" r="5.5" fill="' + c + '"/>';
-      gear = '<path d="M -2,-68 L 11,-68 L 12,-73 L -1,-73 Z" fill="' + c + '"/>' +
-        '<path d="M 10,-69 L 19,-67 L 19,-65.5 L 10,-67 Z" fill="' + c + '"/>' +
-        '<circle cx="7" cy="-50" r="1.6" fill="' + AMBER + '" opacity=".9"/>' +
-        '<rect x="1" y="-78" width="10" height="2.6" fill="#123238"/>' +
-        '<rect x="1.6" y="-77.4" width="4" height="1.6" fill="' + RED + '" class="' + (anim ? 'mf-sr' : '') + '"/>' +
-        '<rect x="6.6" y="-77.4" width="4" height="1.6" fill="' + BLUE + '" class="' + (anim ? 'mf-sb' : '') + '"/>';
+      body = '<path d="M -8,-56 L 10,-56 L 12,-24 L 6,-20 L -6,-24 Z" fill="' + c + '"/>' +
+        '<line x1="1" y1="-56" x2="1" y2="-24" stroke="#1a5a63" stroke-width="1.2"/>'; // coat seam
+      head = '<circle cx="4" cy="-64" r="5.8" fill="' + c + '"/>';
+      gear = '<path d="M -2,-69 L 11,-69 L 12,-75 L -1,-75 Z" fill="' + c + '"/>' + // crown
+        '<path d="M -4,-69 L 14,-69 L 14,-71 L -4,-71 Z" fill="' + c + '"/>' + // band
+        '<path d="M 11,-70 L 21,-67.5 L 21,-66 L 11,-68 Z" fill="' + c + '"/>' + // visor
+        '<circle cx="6" cy="-50" r="1.7" fill="' + AMBER + '" opacity=".9"/>' + // badge
+        '<rect x="0" y="-80" width="11" height="2.8" rx="1" fill="#123238"/>' + // light bar
+        '<rect x="0.8" y="-79.5" width="4.4" height="1.8" fill="' + RED + '" class="' + (anim ? 'mf-sr' : '') + '"/>' +
+        '<rect x="5.8" y="-79.5" width="4.4" height="1.8" fill="' + BLUE + '" class="' + (anim ? 'mf-sb' : '') + '"/>';
     }
     var bobOpen = cyc ? '<g class="mf-bob"' + style + '>' : '<g>';
-    return bobOpen + body + head + gear + legs + arms + '</g>';
+    return bobOpen + legs + body + head + gear + arms + '</g>';
   }
 
   function mover(cls, anim, to) {
@@ -2297,6 +2333,23 @@ pre.ascii-art.map-art {
       '<line x1="-40" y1="' + (y + 8) + '" x2="680" y2="' + (y + 8) +
       '" stroke="' + HAIR + '" stroke-width="1" stroke-dasharray="18 30"' +
       (scrollCls ? ' class="' + scrollCls + '"' : '') + '/>';
+  }
+
+  /* distant skyline: 8-block repeat, drawn 3x for seamless scroll */
+  function skyline(y, cls) {
+    var hs = [34, 58, 22, 46, 62, 30, 50, 40];
+    var W = hs.length * 38;
+    var d = '';
+    for (var rep = 0; rep < 3; rep++) {
+      var x = rep * W - W;
+      d += 'M ' + x + ',' + y + ' ';
+      for (var i = 0; i < hs.length; i++) {
+        d += 'L ' + x + ',' + (y - hs[i]) + ' L ' + (x + 38) + ',' + (y - hs[i]) + ' ';
+        x += 38;
+      }
+      d += 'L ' + x + ',' + y + ' Z ';
+    }
+    return '<g' + (cls ? ' class="' + cls + '"' : '') + '><path d="' + d + '" fill="#0a2210"/></g>';
   }
 
   /* letterbox + wire caption: the chic frame around every beat */
@@ -2317,7 +2370,7 @@ pre.ascii-art.map-art {
 
     /* 1. THE GETAWAY */
     run: function (anim) {
-      var g = frame('THE GETAWAY', '0347 HRS') + ground(188, anim ? 'mf-dash3' : '');
+      var g = frame('THE GETAWAY', '0347 HRS') + skyline(188, anim ? 'mf-skyA' : '') + ground(188, anim ? 'mf-dash3' : '');
       g += '<line x1="70" y1="120" x2="150" y2="120" stroke="' + GREEN + '" stroke-width="1.5" class="' + (anim ? 'mf-spark1' : '') + '" opacity=".3"/>' +
         '<line x1="50" y1="142" x2="120" y2="142" stroke="' + GREEN + '" stroke-width="1.5" class="' + (anim ? 'mf-spark2' : '') + '" opacity=".2"/>';
       g += mover('mf-run-thief', anim, '500,188') +
@@ -2327,7 +2380,7 @@ pre.ascii-art.map-art {
 
     /* 2. PURSUIT */
     chase: function (anim) {
-      var g = frame('PURSUIT', '0348 HRS') + ground(188, anim ? 'mf-dash22' : '');
+      var g = frame('PURSUIT', '0348 HRS') + skyline(188, anim ? 'mf-skyB' : '') + ground(188, anim ? 'mf-dash22' : '');
       g += mover('mf-chase-thief', anim, '545,188') + figure(anim, { thief: true, c: GREEN, still: !anim }) + '</g>';
       g += mover('mf-chase-cop1', anim, '275,188') + figure(anim, { cop: true, c: CYAN, still: !anim }) + '</g>';
       g += mover('mf-chase-cop2', anim, '225,188') + figure(anim, { cop: true, c: CYAN, still: !anim, dur: '.3s' }) + '</g>';
@@ -2336,7 +2389,16 @@ pre.ascii-art.map-art {
 
     /* 3. CORNERED */
     surround: function (anim) {
-      var g = frame('CORNERED', '0349 HRS') + ground(188, null);
+      var g = frame('CORNERED', '0349 HRS');
+      g += '<rect x="0" y="46" width="640" height="142" fill="#0a1f0e"/>' +
+        '<line x1="0" y1="46.5" x2="640" y2="46.5" stroke="' + HAIR + '" stroke-width="1"/>' +
+        '<line x1="0" y1="86" x2="640" y2="86" stroke="#0d2912" stroke-width="1"/>' +
+        '<line x1="0" y1="126" x2="640" y2="126" stroke="#0d2912" stroke-width="1"/>' +
+        '<rect x="96" y="62" width="38" height="30" fill="#081808" stroke="' + HAIR + '" stroke-width="1"/>' +
+        '<line x1="115" y1="62" x2="115" y2="92" stroke="' + HAIR + '" stroke-width="1"/>' +
+        '<rect x="100" y="66" width="12" height="22" fill="#243f1f" opacity=".5"/>' +
+        '<line x1="470" y1="46" x2="470" y2="188" stroke="#12301a" stroke-width="5"/>' +
+        ground(188, null);
       g += '<ellipse cx="320" cy="186" rx="95" ry="8" fill="' + AMBER + '"' +
         (anim ? ' opacity="0" class="mf-spot"' : ' opacity=".22"') + '/>';
       g += mover('mf-sur-thief', anim, '310,188') +
@@ -2361,6 +2423,11 @@ pre.ascii-art.map-art {
     /* 4. BOOKED */
     jail: function (anim) {
       var g = frame('BOOKED', '0352 HRS');
+      g += '<rect x="0" y="16" width="640" height="172" fill="#081a0c"/>' +
+        '<rect x="96" y="40" width="30" height="42" fill="#123a26"/>' +
+        '<line x1="106" y1="40" x2="106" y2="82" stroke="#081a0c" stroke-width="3"/>' +
+        '<line x1="116" y1="40" x2="116" y2="82" stroke="#081a0c" stroke-width="3"/>' +
+        '<polygon points="96,82 126,82 168,188 58,188" fill="#cfe8cf" opacity=".05"/>';
       g += '<rect x="215" y="26" width="210" height="162" fill="none" stroke="' + HAIR + '" stroke-width="1.5"/>';
       g += ground(188, null);
       // slumped silhouette, fedora on the floor beside him
@@ -2386,7 +2453,11 @@ pre.ascii-art.map-art {
       g += '<line x1="0" y1="150" x2="640" y2="150" stroke="' + HAIR + '" stroke-width="1"/>' +
         '<line x1="0" y1="156" x2="640" y2="156" stroke="' + HAIR + '" stroke-width="1" stroke-dasharray="30 40" opacity=".6"' +
         (anim ? ' class="mf-wake"' : '') + '/>' +
-        '<circle cx="560" cy="138" r="20" fill="none" stroke="' + AMBER + '" stroke-width="1.5" opacity=".4"/>';
+        '<circle cx="560" cy="138" r="20" fill="none" stroke="' + AMBER + '" stroke-width="1.5" opacity=".4"/>' +
+        '<g transform="scale(0.5,1)"><g transform="translate(660,0)">' + skyline(150, '') + '</g></g>' +
+        '<line x1="548" y1="158" x2="572" y2="158" stroke="' + AMBER + '" stroke-width="1" opacity=".25"/>' +
+        '<line x1="552" y1="164" x2="568" y2="164" stroke="' + AMBER + '" stroke-width="1" opacity=".18"/>' +
+        '<line x1="556" y1="170" x2="564" y2="170" stroke="' + AMBER + '" stroke-width="1" opacity=".12"/>';
       g += mover('mf-plane', anim, '-40,120') +
         '<path d="M -52,-14 L 34,-14 Q 52,-10 46,-2 L -46,-2 Q -58,-6 -52,-14 Z" fill="' + GREEN + '" opacity=".9"/>' +
         '<line x1="-20" y1="-14" x2="-20" y2="-40" stroke="' + GREEN + '" stroke-width="2.5"/>' +
@@ -2409,7 +2480,11 @@ pre.ascii-art.map-art {
 
     /* arrival stinger: thief crossing a lamplit street */
     walk: function (anim) {
-      var g = '<line x1="0" y1="102" x2="320" y2="102" stroke="' + HAIR + '" stroke-width="1"/>' +
+      var g = '<rect x="0" y="26" width="320" height="76" fill="#081a0c"/>' +
+        '<rect x="30" y="40" width="14" height="18" fill="#243f1f" opacity=".55"/>' +
+        '<rect x="70" y="56" width="14" height="18" fill="#243f1f" opacity=".35"/>' +
+        '<rect x="150" y="40" width="14" height="18" fill="#243f1f" opacity=".45"/>' +
+        '<line x1="0" y1="102" x2="320" y2="102" stroke="' + HAIR + '" stroke-width="1"/>' +
         '<line x1="252" y1="102" x2="252" y2="38" stroke="' + HAIR + '" stroke-width="2"/>' +
         '<circle cx="252" cy="34" r="4" fill="' + AMBER + '" opacity=".7"/>' +
         '<circle cx="252" cy="34" r="13" fill="' + AMBER + '" opacity=".08"/>';
