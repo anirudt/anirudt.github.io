@@ -449,7 +449,7 @@ pre.ascii-art.map-art {
 </style>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='14' font-size='14'>🧭</text></svg>">
 <script>window.MF_CONFIG = { gameUrl: "https://anirudt.github.io/meridian.html" };</script>
-<!--MF-BUILD:b62054d-->
+<!--MF-BUILD:8031163-->
 </head>
 <body>
 <div id="app">
@@ -3017,44 +3017,122 @@ pre.ascii-art.map-art {
       return { id: id, x: p[0], y: p[1] };
     });
 
-    // ---- labels: slot search with rectangle collision resolution ----
-    const FW = 4.7, FH = 9;
-    const placed = [];
-    const overlaps = r => placed.some(q => !(r.x1 < q.x0 - 1.5 || r.x0 > q.x1 + 1.5 || r.y1 < q.y0 - 1 || r.y0 > q.y1 + 1));
-    const slots = [
-      [8, 'start', -1], [-8, 'end', -1], [0, 'middle', -9], [0, 'middle', 14],
-      [10, 'start', -9], [-10, 'end', -9], [10, 'start', 8], [-10, 'end', 8],
-      [14, 'start', -2], [-14, 'end', -2]
-    ];
-    const labelEls = {};
-    cities.forEach(city => {
-      const name = E.CITY_BY_ID[city.id].name;
-      const w = name.length * FW;
-      for (const s of slots) {
-        const lx = city.x + s[0], anchor = s[1], ly = city.y + s[2];
-        let x0 = anchor === 'start' ? lx : anchor === 'end' ? lx - w : lx - w / 2;
-        if (x0 < 1 || x0 + w > WG.w - 1) continue;
-        const rect = { x0: x0, y0: ly - FH + 2, x1: x0 + w, y1: ly + 2 };
-        if (overlaps(rect)) continue;
-        if (Math.abs(s[0]) > 2 || s[2] !== -1) {
-          const lead = document.createElementNS(NS, 'line');
-          lead.setAttribute('x1', city.x.toFixed(1)); lead.setAttribute('y1', city.y.toFixed(1));
-          lead.setAttribute('x2', lx.toFixed(1)); lead.setAttribute('y2', (ly - 3).toFixed(1));
-          lead.setAttribute('class', 'map-leader');
-          svg.appendChild(lead);
-        }
-        const t = document.createElementNS(NS, 'text');
-        t.setAttribute('x', lx.toFixed(1));
-        t.setAttribute('y', ly.toFixed(1));
-        t.setAttribute('text-anchor', anchor);
-        t.setAttribute('class', 'map-label');
-        t.textContent = name;
-        svg.appendChild(t);
-        labelEls[city.id] = t;
-        placed.push(rect);
-        break;
+    // ---- labels: measure real text widths, search slots in 8 directions at
+    // growing radii, dense clusters placed FIRST, never dropped — worst case
+    // takes the least-overlapping slot with a leader line ----
+    const meas = document.createElement('canvas').getContext('2d');
+    meas.font = "10px 'VT323', 'Courier New', monospace";
+    const textW = function (name) {
+      let w = 0;
+      try { w = meas.measureText(name).width; } catch (e) { /* no canvas */ }
+      if (!w) w = name.length * 5.0;
+      return w + name.length * 0.5; // letter-spacing
+    };
+    const placedRects = [];
+    const dotRects = cities.map(c => ({ x0: c.x - 4.2, y0: c.y - 4.2, x1: c.x + 4.2, y1: c.y + 4.2 }));
+    const hitArea = function (r, list) {
+      let sum = 0;
+      for (const q of list) {
+        const ix = Math.min(r.x1, q.x1) - Math.max(r.x0, q.x0);
+        const iy = Math.min(r.y1, q.y1) - Math.max(r.y0, q.y0);
+        if (ix > 0 && iy > 0) sum += ix * iy;
       }
+      return sum;
+    };
+    const DIRS = [
+      [1, 0, 'start'], [-1, 0, 'end'], [0, -1, 'middle'], [0, 1, 'middle'],
+      [1, -1, 'start'], [-1, -1, 'end'], [1, 1, 'start'], [-1, 1, 'end']
+    ];
+    const RADII = [7, 10, 14, 19, 25, 32];
+    const RADII2 = RADII.concat([40, 48, 56]);
+    function labelCandidates(city, radii) {
+      const name = E.CITY_BY_ID[city.id].name;
+      const w = textW(name);
+      const out = [];
+      for (const r of (radii || RADII)) {
+        for (const d of DIRS) {
+          const dx = d[0], dy = d[1], anchor = d[2];
+          const lx = city.x + dx * (dx === 0 ? 0 : r * 0.55);
+          const ly = city.y + (dy < 0 ? -r * 0.5 : dy > 0 ? r * 0.5 : 3);
+          let x0 = anchor === 'start' ? lx : anchor === 'end' ? lx - w : lx - w / 2;
+          const rect = { x0: x0, y0: ly - 9, x1: x0 + w, y1: ly + 2 };
+          if (rect.x0 < 1 || rect.x1 > WG.w - 1 || rect.y0 < 1 || rect.y1 > WG.h - 1) continue;
+          out.push({ lx: lx, ly: ly, anchor: anchor, rect: rect, r: r, dx: dx, dy: dy });
+        }
+      }
+      return out;
+    }
+    // dense neighbourhoods get first pick; the "here" city is sacred
+    function neighborCount(city) {
+      let n = 0;
+      for (const o of cities) if (o !== city && Math.hypot(o.x - city.x, o.y - city.y) < 24) n++;
+      return n;
+    }
+    const order = cities.slice().sort((a, b) =>
+      ((b.id === opts.hereId) - (a.id === opts.hereId)) || (neighborCount(b) - neighborCount(a)));
+    const labelEls = {};
+    const recs = [];
+    function applyPos(rec, c) {
+      const t = rec.text;
+      t.setAttribute('x', c.lx.toFixed(1));
+      t.setAttribute('y', c.ly.toFixed(1));
+      t.setAttribute('text-anchor', c.anchor);
+      if (c.r > 7) {
+        if (!rec.lead) {
+          rec.lead = document.createElementNS(NS, 'line');
+          rec.lead.setAttribute('class', 'map-leader');
+          svg.insertBefore(rec.lead, svg.firstChild.nextSibling); // under labels, over land
+        }
+        rec.lead.setAttribute('x1', rec.city.x.toFixed(1)); rec.lead.setAttribute('y1', rec.city.y.toFixed(1));
+        rec.lead.setAttribute('x2', (c.anchor === 'start' ? c.lx - 1.5 : c.anchor === 'end' ? c.lx + 1.5 : c.lx).toFixed(1));
+        rec.lead.setAttribute('y2', (c.ly - 3).toFixed(1));
+      } else if (rec.lead) { rec.lead.remove(); rec.lead = null; }
+      rec.rect = c.rect;
+    }
+    order.forEach(city => {
+      const cands = labelCandidates(city);
+      if (!cands.length) return;
+      const myDots = dotRects.filter((_, i) => cities[i].id !== city.id);
+      let pick = null, best = Infinity;
+      for (const c of cands) {
+        const score = hitArea(c.rect, placedRects) + hitArea(c.rect, myDots) * 2;
+        if (score === 0) { pick = c; break; }
+        if (score < best) { best = score; pick = c; }
+      }
+      const t = document.createElementNS(NS, 'text');
+      t.setAttribute('class', 'map-label');
+      t.textContent = E.CITY_BY_ID[city.id].name;
+      svg.appendChild(t);
+      const rec = { city: city, text: t, lead: null, rect: null };
+      applyPos(rec, pick);
+      labelEls[city.id] = t;
+      recs.push(rec);
+      placedRects.push(rec.rect);
     });
+    // fixup passes: relocate overlapping labels with wider radii, repeat
+    // until stable (one sequential pass can move A into B's path)
+    for (let pass = 0; pass < 5; pass++) {
+      let moved = false;
+      for (const rec of recs) {
+        const others = recs.filter(o => o !== rec).map(o => o.rect);
+        const myDots = dotRects.filter((_, i) => cities[i].id !== rec.city.id);
+        if (hitArea(rec.rect, others) + hitArea(rec.rect, myDots) * 2 === 0) continue;
+        const cands = labelCandidates(rec.city, RADII2);
+        let pick = null, best = hitArea(rec.rect, others) + hitArea(rec.rect, myDots) * 2;
+        for (const c of cands) {
+          const score = hitArea(c.rect, others) + hitArea(c.rect, myDots) * 2;
+          if (score === 0) { pick = c; break; }
+          if (score < best) { best = score; pick = c; }
+        }
+        if (!pick) continue;
+        const old = rec.rect;
+        placedRects.splice(placedRects.indexOf(old), 1);
+        applyPos(rec, pick);
+        placedRects.push(rec.rect);
+        moved = true;
+      }
+      if (!moved) break;
+    }
 
     // ---- dots (drawn after labels so they sit on top) + click targets ----
     cities.forEach(city => {
