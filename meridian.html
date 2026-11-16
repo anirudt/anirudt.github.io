@@ -575,7 +575,7 @@ pre.ascii-art.map-art {
 </style>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='14' font-size='14'>🧭</text></svg>">
 <script>window.MF_CONFIG = { gameUrl: "https://anirudt.github.io/meridian.html" };</script>
-<!--MF-BUILD:9ae6dd7-->
+<!--MF-BUILD:bdec137-->
 </head>
 <body>
 <div id="app">
@@ -2640,7 +2640,7 @@ pre.ascii-art.map-art {
 
     const shuffled = rng.shuffle(CITIES.slice());
     const route = shuffled.slice(0, stops + 1).map(c => c.id); // [crimeScene, stop1..stopN]
-    const budget = 26 + stops * 10;                   // hours on the clock (26: covers ~2 wrong-city canvasses)
+    const budget = 28 + stops * 10;                   // hours on the clock (v0.17: 26->28 with dual dest clues + realistic sim)
 
     // Pre-rolled flight overheads (index by flight number) — deterministic.
     const rngDelay = U.makeRng(U.fnv1a(seedStr + '|flights'));
@@ -2667,11 +2667,20 @@ pre.ascii-art.map-art {
       const list = [];
       const city = CITY_BY_ID[cityId];
       if (i < route.length - 1) {
+        // TWO destination witnesses per hop, citing two different facts of the
+        // target city: redundancy so one cryptic fact can't dead-end a run.
         const target = CITY_BY_ID[route[i + 1]];
+        const tFacts = rng.shuffle(target.facts.slice());
         list.push({
           id: cityId + '-dest', kind: 'dest', role: nextRole(),
           targetCity: target.id,
-          fact: rng.pick(target.facts),
+          fact: tFacts[0],
+          tpl: rng.pick(CASE_DATA.DEST_TEMPLATES)
+        });
+        list.push({
+          id: cityId + '-dest2', kind: 'dest', role: nextRole(),
+          targetCity: target.id,
+          fact: tFacts[1 % tFacts.length],
           tpl: rng.pick(CASE_DATA.DEST_TEMPLATES)
         });
       } else {
@@ -2740,11 +2749,12 @@ pre.ascii-art.map-art {
     return list;
   }
 
-  // Dead-end cities get 2-3 neutral witnesses (deterministic per seed+city),
+  // Dead-end cities get 2-4 neutral witnesses (deterministic per seed+city),
+  // matching route-city headcounts (route cities hold 2-4, final can be 1-2),
   // so they are indistinguishable from route cities until you spend the time.
   function deadEndWitnesses(st, cityId) {
     if (!st.deadEnds[cityId]) {
-      const n = 2 + (U.fnv1a(st.kase.seedStr + '|' + cityId) % 2); // 2-3
+      const n = 2 + (U.fnv1a(st.kase.seedStr + '|' + cityId) % 3); // 2-4
       const list = [];
       for (let i = 0; i < n; i++) {
         const h = U.fnv1a(st.kase.seedStr + '|' + cityId + '|w' + i);
