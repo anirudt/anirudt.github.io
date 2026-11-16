@@ -470,6 +470,21 @@ pre.ascii-art {
 @keyframes mf-flyby { from { transform: translate(700px, 120px); } to { transform: translate(-160px, 120px); } }
 .scene-svg .mf-walk-thief { animation: mf-walk 2.3s linear both; }
 @keyframes mf-walk { from { transform: translate(-40px, 102px); } to { transform: translate(320px, 102px); } }
+.scene-svg .mf-limp-thief { animation: mf-walk 3.2s linear both; }
+.scene-svg .mf-knife-walk { animation: mf-walk 2.0s linear both; }
+
+/* the thrown knife: enters from the right, bites the wall left, quivers */
+.scene-svg .mf-knife { animation: mf-knife-fly 1.5s linear .35s both; }
+@keyframes mf-knife-fly {
+  0%   { transform: translate(340px, 64px) rotate(-6deg); }
+  55%  { transform: translate(34px, 52px) rotate(0deg); }
+  62%  { transform: translate(22px, 52px) rotate(7deg); }
+  74%  { transform: translate(30px, 52px) rotate(-4deg); }
+  86%  { transform: translate(26px, 52px) rotate(2deg); }
+  100% { transform: translate(28px, 52px) rotate(0deg); }
+}
+.scene-svg .mf-hit-spark { animation: mf-hitflash .5s linear .85s both; }
+@keyframes mf-hitflash { 0% { opacity: 0; } 25% { opacity: 1; } 100% { opacity: 0; } }
 
 /* surround beats: spotlight, hands up, sack drop */
 .scene-svg .mf-spot { transform-box: fill-box; transform-origin: 50% 50%;
@@ -560,7 +575,7 @@ pre.ascii-art.map-art {
 </style>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='14' font-size='14'>🧭</text></svg>">
 <script>window.MF_CONFIG = { gameUrl: "https://anirudt.github.io/meridian.html" };</script>
-<!--MF-BUILD:c5dda78-->
+<!--MF-BUILD:9ae6dd7-->
 </head>
 <body>
 <div id="app">
@@ -632,7 +647,7 @@ pre.ascii-art.map-art {
         <h2 id="city-name"></h2>
         <span class="country" id="city-country"></span>
       </div>
-      <div id="city-note" class="dim"></div>
+      <div id="city-note" class="dim hidden"></div>
       <div id="city-art" aria-hidden="true"></div>
       <div id="city-stinger"></div>
     </div>
@@ -2271,19 +2286,22 @@ pre.ascii-art.map-art {
     var c = opts.c;
     var legs = '', arms = '';
 
-    function seg(clsThigh, clsShin, x2, back) {
+    function seg(clsThigh, clsShin, x2, back, tiltDeg) {
       var footX = back ? -6 : 7;
-      return '<g class="' + clsThigh + '"' + style + '>' +
+      var wrap = tiltDeg ? '<g transform="rotate(' + tiltDeg + ')">' : '';
+      var wrapEnd = tiltDeg ? '</g>' : '';
+      return wrap + '<g class="' + clsThigh + '"' + style + '>' +
         '<circle cx="0" cy="0" r="0.01" fill="none"/>' +
         '<line x1="0" y1="0" x2="' + x2 + '" y2="14" stroke-width="6.5" stroke="' + c + '" stroke-linecap="round"/>' +
         '<g transform="translate(' + x2 + ',14)"><g class="' + clsShin + '"' + style + '>' +
         '<circle cx="0" cy="0" r="0.01" fill="none"/>' +
         '<line x1="0" y1="0" x2="' + (back ? -1 : 1) + '" y2="15" stroke-width="5.5" stroke="' + c + '" stroke-linecap="round"/>' +
         '<line x1="0" y1="16" x2="' + footX + '" y2="16" stroke-width="3.5" stroke="' + c + '" stroke-linecap="round"/>' +
-        '</g></g></g>';
+        '</g></g></g>' + wrapEnd;
     }
     if (cyc) {
-      legs = '<g transform="translate(0,-28)">' + seg('mf-thighb', 'mf-shinb', -3, true) +
+      legs = '<g transform="translate(0,-28)">' +
+        seg(opts.drag ? '' : 'mf-thighb', opts.drag ? '' : 'mf-shinb', -3, true, opts.drag ? 15 : 0) +
         seg('mf-thighf', 'mf-shinf', 5, false) + '</g>';
     } else {
       // planted: slight A-stance, feet forward
@@ -2335,7 +2353,9 @@ pre.ascii-art.map-art {
         '<rect x="5.8" y="-79.5" width="4.4" height="1.8" fill="' + BLUE + '" class="' + (anim ? 'mf-sb' : '') + '"/>';
     }
     var bobOpen = cyc ? '<g class="mf-bob"' + style + '>' : '<g>';
-    return bobOpen + legs + body + head + gear + arms + '</g>';
+    var lean = opts.tilt ? '<g transform="rotate(5 0 -25)">' : '';
+    var leanEnd = opts.tilt ? '</g>' : '';
+    return bobOpen + lean + legs + body + head + gear + arms + leanEnd + '</g>';
   }
 
   function mover(cls, anim, to) {
@@ -2513,7 +2533,42 @@ pre.ascii-art.map-art {
     }
   };
 
+  /* arrival vignette 2: a courier limping past, bad night, worse company */
+  scenes.limp = function (anim) {
+    var g = '<line x1="0" y1="102" x2="320" y2="102" stroke="' + HAIR + '" stroke-width="1"/>' +
+      '<line x1="60" y1="102" x2="60" y2="46" stroke="' + HAIR + '" stroke-width="2"/>' +
+      '<circle cx="60" cy="42" r="3.5" fill="' + AMBER + '" opacity=".55"/>' +
+      '<circle cx="60" cy="42" r="10" fill="' + AMBER + '" opacity=".06"/>' +
+      '<rect x="220" y="34" width="14" height="60" fill="#0a1f0e"/>'; // doorway
+    g += (anim ? '<g class="mf-limp-thief">' : '<g transform="translate(140,102)">') +
+      figure(anim, { thief: true, c: GREEN, still: !anim, dur: '.5s', tilt: true, drag: true }) + '</g>';
+    return '<svg ' + NS + ' viewBox="0 0 320 120" class="scene-svg scene-walk">' + g + '</svg>';
+  };
+
+  /* arrival vignette 3: argument overhead — a knife flies right to left and
+     thuds into the wall; the courier does not look up. Nobody ever does. */
+  scenes.knife = function (anim) {
+    var g = '<line x1="0" y1="102" x2="320" y2="102" stroke="' + HAIR + '" stroke-width="1"/>' +
+      '<rect x="0" y="18" width="30" height="84" fill="#0a1f0e"/>' +
+      '<line x1="30" y1="18" x2="30" y2="102" stroke="' + HAIR + '" stroke-width="1"/>' +
+      '<rect x="240" y="26" width="40" height="24" fill="none" stroke="#0f3a1b" stroke-width="1.5" opacity=".7"/>'; // lit window
+    g += (anim ? '<g class="mf-knife-walk">' : '<g transform="translate(200,102)">') +
+      figure(anim, { thief: true, c: GREEN, still: !anim, dur: '.28s' }) + '</g>';
+    if (anim) {
+      g += '<g class="mf-knife"><path d="M 0,0 L -16,-2.6 L -25,0 L -16,2.6 Z" fill="#cfd8cf"/>' +
+        '<line x1="-14" y1="-3.6" x2="-14" y2="3.6" stroke="#8fbf94" stroke-width="1.8"/>' +
+        '<rect x="0" y="-1.6" width="11" height="3.2" rx="1" fill="#6f9f74"/></g>';
+      g += '<circle cx="18" cy="52" r="2.2" fill="' + AMBER + '" class="mf-hit-spark"/>';
+    } else {
+      g += '<g transform="translate(34,52) rotate(-3)"><path d="M 0,0 L -16,-2.6 L -25,0 L -16,2.6 Z" fill="#cfd8cf"/>' +
+        '<line x1="-14" y1="-3.6" x2="-14" y2="3.6" stroke="#8fbf94" stroke-width="1.8"/>' +
+        '<rect x="0" y="-1.6" width="11" height="3.2" rx="1" fill="#6f9f74"/></g>';
+    }
+    return '<svg ' + NS + ' viewBox="0 0 320 120" class="scene-svg scene-walk">' + g + '</svg>';
+  };
+
   root.SVG_SCENES = {
+    durations: { walk: 2600, limp: 3600, knife: 3200 },
     chains: {
       win: [['run', 2000, 'bassHit'], ['chase', 2600, 'siren'], ['surround', 2300], ['jail', 2500]],
       lose: [['lose', 3000]]
@@ -3090,6 +3145,7 @@ pre.ascii-art.map-art {
     $('#city-name').textContent = city.name;
     $('#city-country').textContent = city.country + ' • ' + city.region;
     $('#city-note').textContent = 'Bureau field office online — canvass the area with [1] INTERVIEW.';
+    $('#city-note').classList.remove('hidden');
     $('#act-arrest').innerHTML = '<span class="key">[5]</span> ARREST!' + (game.warrant ? ' ✓' : '');
   }
 
@@ -3125,15 +3181,29 @@ pre.ascii-art.map-art {
   /* ================= animations ================= */
 
   function playArrival() {
+    // Same walk + advisory in EVERY city, route or dead end: the animation is
+    // atmosphere, and the note says so — a hooded figure must never read as
+    // evidence of the thief's trail (players took it that way and misfired).
+    const note = $('#city-note');
+    if (note) {
+      note.textContent = 'BUREAU ADVISORY — COPYCAT COURIERS WORK EVERY PORT IN MERIDIAN. ' +
+        'A HOODED FIGURE PROVES NOTHING; CONFIRM THROUGH WITNESSES.';
+      note.classList.remove('hidden');
+    }
     const host = $('#city-art');
     if (!host || (!Art.pack('thief-walk') && !root.SVG_SCENES)) return;
     host.innerHTML = '';
     Audio.arrive();
     if (root.SVG_SCENES) {
       var reduced = root.matchMedia && root.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      // vignette by LANDING COUNT, never by route membership: the same three
+      // beats play in dead-end cities as on the trail, so nothing leaks
+      var landings = Math.max(1, (game && game.flightsTaken) || 1);
+      var variant = ['knife', 'limp', 'walk'][(landings - 1) % 3];
+      var ms = (root.SVG_SCENES.durations[variant] || 2600) + 400;
       host.innerHTML = '';
-      root.SVG_SCENES.render(host, 'walk', { anim: !reduced });
-      setTimeout(function () { host.innerHTML = ''; }, reduced ? 900 : 2600);
+      root.SVG_SCENES.render(host, variant, { anim: !reduced });
+      setTimeout(function () { host.innerHTML = ''; }, reduced ? 900 : ms);
       return;
     }
     if (!Art.pack('thief-walk')) return;
