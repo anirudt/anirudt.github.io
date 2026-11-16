@@ -575,7 +575,7 @@ pre.ascii-art.map-art {
 </style>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='14' font-size='14'>🧭</text></svg>">
 <script>window.MF_CONFIG = { gameUrl: "https://anirudt.github.io/meridian.html" };</script>
-<!--MF-BUILD:bdec137-->
+<!--MF-BUILD:da78c94-->
 </head>
 <body>
 <div id="app">
@@ -1253,8 +1253,8 @@ pre.ascii-art.map-art {
       'a ski slope kept freezing in the middle of a desert',
       'wooden abra boats crossing a creek between gold and spice souks' ] },
     { id: 'mumbai', name: 'MUMBAI', country: 'INDIA', region: 'SOUTH ASIA', facts: [
-      'a basalt gateway arch where viceroys once landed',
       'a film factory that outsells every studio on earth',
+      'a basalt gateway arch where viceroys once landed',
       'local trains carrying more people daily than some nations',
       'island cave temples carved out of solid rock' ] },
     { id: 'delhi', name: 'DELHI', country: 'INDIA', region: 'SOUTH ASIA', facts: [
@@ -2667,20 +2667,21 @@ pre.ascii-art.map-art {
       const list = [];
       const city = CITY_BY_ID[cityId];
       if (i < route.length - 1) {
-        // TWO destination witnesses per hop, citing two different facts of the
-        // target city: redundancy so one cryptic fact can't dead-end a run.
+        // TWO destination witnesses per hop. CONTENT CONVENTION: facts[0] and
+        // facts[1] are the city's two most POPULAR facts (validator enforces
+        // dest witnesses cite exactly these) — no lottery drawing obscure
+        // deep cuts like hanok rooflines when K-pop oceans are sitting at #1.
         const target = CITY_BY_ID[route[i + 1]];
-        const tFacts = rng.shuffle(target.facts.slice());
         list.push({
           id: cityId + '-dest', kind: 'dest', role: nextRole(),
           targetCity: target.id,
-          fact: tFacts[0],
+          fact: target.facts[0],
           tpl: rng.pick(CASE_DATA.DEST_TEMPLATES)
         });
         list.push({
           id: cityId + '-dest2', kind: 'dest', role: nextRole(),
           targetCity: target.id,
-          fact: tFacts[1 % tFacts.length],
+          fact: target.facts[1],
           tpl: rng.pick(CASE_DATA.DEST_TEMPLATES)
         });
       } else {
