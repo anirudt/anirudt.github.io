@@ -321,7 +321,7 @@ button.primary { background: var(--ink); color: var(--paper); border-color: var(
 
 </style>
 <script>window.F_CONFIG = { gameUrl: "https://anirudt.github.io/factors.html" };</script>
-<!--F-BUILD:37c1bc3-->
+<!--F-BUILD:8de84c5-->
 </head>
 <body>
   <header>
@@ -717,7 +717,8 @@ if (typeof module !== 'undefined') {
     cur = {
       n: size, N: size * size, puzzle,
       cells: st.cells, ms: st.ms, solved: st.solved,
-      timerStart: (st.ms && !st.solved) ? Date.now() - st.ms : null,
+      // the clock runs from the moment a board is open (resumed if in progress)
+      timerStart: st.solved ? null : Date.now() - st.ms,
     };
     active = -1;
     pad.hidden = true;
@@ -819,12 +820,10 @@ if (typeof module !== 'undefined') {
     const s = Math.floor(ms / 1000);
     return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
   }
-  function startTimer() { if (cur && !cur.timerStart && !cur.solved) cur.timerStart = Date.now(); }
 
   // ---- keypad popover --------------------------------------------------------
   $('#padTrash').addEventListener('click', () => {
     if (active < 0) return;
-    startTimer();
     cur.cells[active] = 0;
     render(); refreshPad(); saveState();
   });
@@ -869,7 +868,6 @@ if (typeof module !== 'undefined') {
 
   function tapNumber(v) {
     if (active < 0) return;
-    startTimer();
     const cells = cur.cells;
     const other = cells.indexOf(v);
     if (other >= 0 && other !== active) {
@@ -895,7 +893,7 @@ if (typeof module !== 'undefined') {
       const d = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -m, ArrowDown: m }[e.key];
       if (d !== undefined) { const j = i + d; if (j >= 0 && j < cur.N) { cellEls[j].focus(); e.preventDefault(); } }
       else if (e.key === 'Enter' || e.key === ' ') openPad(i);
-      else if (e.key === 'Backspace') { startTimer(); cur.cells[i] = 0; render(); saveState(); if (!pad.hidden) refreshPad(); }
+      else if (e.key === 'Backspace') { cur.cells[i] = 0; render(); saveState(); if (!pad.hidden) refreshPad(); }
     });
     el.draggable = true;
     el.addEventListener('dragstart', (e) => {
@@ -911,7 +909,6 @@ if (typeof module !== 'undefined') {
       el.classList.remove('dropon');
       const src = parseInt(e.dataTransfer.getData('text/plain'), 10);
       if (Number.isNaN(src) || src === i) return;
-      startTimer();
       const cells = cur.cells;
       [cells[src], cells[i]] = [cells[i], cells[src]];
       render(); saveState();
@@ -964,7 +961,7 @@ if (typeof module !== 'undefined') {
   $('#btnCheck').addEventListener('click', () => { closePad(); check(); });
   $('#btnClear').addEventListener('click', () => {
     cur.cells = new Array(cur.N).fill(0);
-    cur.ms = 0; cur.timerStart = null; cur.solved = false;
+    cur.ms = 0; cur.timerStart = Date.now(); cur.solved = false;
     saveState(); render(); clearMarks(); closePad(); tick();
   });
   $('#overlayBtn').addEventListener('click', () => { $('#overlay').hidden = true; });
