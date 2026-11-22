@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>FACTORS — the daily Σ× grid</title>
-  <meta name="description" content="Daily number puzzle: fill 1–16 in a 4×4 grid so every row and column matches its product and sum. Provably one solution, every day.">
+  <title>FACTORS</title>
+  <meta name="description" content="Daily number puzzle. Fill 1–16 so every row and column matches its product and sum. One solution a day.">
   <style>
 /* Mulish + Sansita, SIL OFL, self-hosted as data URIs */
 @font-face {
@@ -212,7 +212,6 @@ button.padnum.used { opacity: 0.45; border-style: dashed; }
 .hint.c .blocks { justify-content: center; max-width: 60px; }
 .hint.corner { color: var(--muted); font-family: 'Mulish', sans-serif; font-size: 12px; }
 .hint.corner .p, .hint.corner .s { font-size: 12px; color: var(--muted); font-weight: 400; }
-.c-hints-row { display: contents; }
 
 #legend {
   color: var(--muted);
@@ -247,8 +246,6 @@ button.primary { background: var(--ink); color: var(--paper); border-color: var(
 #timer { font-family: var(--mono); font-size: 15px; color: var(--muted); min-width: 44px; }
 
 #status { text-align: center; min-height: 1.4em; font-weight: 600; font-size: 14px; color: var(--bad); }
-
-#meta { text-align: center; color: var(--muted); }
 
 #lab { margin-top: 28px; font-size: 14px; }
 #lab summary { cursor: pointer; font-weight: 700; color: var(--muted); }
@@ -324,12 +321,12 @@ button.primary { background: var(--ink); color: var(--paper); border-color: var(
 
 </style>
 <script>window.F_CONFIG = { gameUrl: "https://anirudt.github.io/factors.html" };</script>
-<!--F-BUILD:7ab7bf7-->
+<!--F-BUILD:fea9a7b-->
 </head>
 <body>
   <header>
     <h1>FACTORS</h1>
-    <p class="sub">the daily Σ× grid · day <span id="daynum"></span> · <span id="datestr"></span></p>
+    <p class="sub">the Σ× grid · <span id="daynum"></span></p>
     <div id="sizes" role="group" aria-label="board size">
       <button class="sizebtn" data-n="4" type="button">4×4</button>
       <button class="sizebtn" data-n="3" type="button">3×3</button>
@@ -340,10 +337,8 @@ button.primary { background: var(--ink); color: var(--paper); border-color: var(
     <div id="board" aria-label="puzzle grid"></div>
 
     <p id="legend">
-      Tap a cell and pick its number from the keypad — every number <span id="numrange">1–16</span> exactly once.
-      Tap a number that is already placed to swap the two cells; drag one cell onto another to swap them too.
-      To the right of every row: its <b>product</b> (written as prime factors) and <b>sum</b>.
-      Below every column: the same. Every day’s grid has exactly one solution — and the page proves it.
+      Tap a cell, pick a number. Use each of <span id="numrange">1–16</span> once.
+      Beside every row and column: its product ×, sum Σ, and prime-factor blocks.
     </p>
 
     <div id="controls">
@@ -353,10 +348,8 @@ button.primary { background: var(--ink); color: var(--paper); border-color: var(
     </div>
     <p id="status" role="status"></p>
 
-    <p id="meta"><small id="geninfo"></small></p>
-
-    <details id="lab">
-      <summary>Uniqueness lab — probe any hint set</summary>
+    <details id="lab" hidden>
+      <summary>clue inspector</summary>
       <div id="labgrid"></div>
       <button id="labRun">Count solutions</button>
       <pre id="labResult"></pre>
@@ -373,13 +366,13 @@ button.primary { background: var(--ink); color: var(--paper); border-color: var(
   <div id="overlay" hidden>
     <div id="overlayCard">
       <h2>Solved</h2>
-      <p>FACTORS #<span id="overlayDay"></span> <span id="overlaySize"></span> · <span id="wintime"></span></p>
-      <textarea id="share" rows="3" readonly></textarea>
+      <p><span id="overlaySize"></span> · #<span id="overlayDay"></span> · <span id="wintime"></span></p>
+      <textarea id="share" rows="2" readonly></textarea>
       <button id="overlayBtn">Close</button>
     </div>
   </div>
 
-  <noscript><p style="text-align:center">FACTORS needs JavaScript — the daily proof runs in your browser.</p></noscript>
+  <noscript><p style="text-align:center">Needs JavaScript.</p></noscript>
   <script>
 // FACTORS — solver engine. Pure functions, no DOM. Used by the game, the
 // daily generator, and the uniqueness lab. Mirrors the Python prototype in
@@ -676,10 +669,11 @@ if (typeof module !== 'undefined') {
   const epochDay = Math.floor(
     Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) / 86400000
   );
-  const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
   $('#daynum').textContent = '#' + epochDay;
   $('#overlayDay').textContent = epochDay;
-  $('#datestr').textContent = dateStr;
+
+  // clue inspector stays hidden unless ?lab — players never see debug chrome
+  if (/[?&]lab\b/.test(location.search)) $('#lab').hidden = false;
 
   // ---- current game (per size) ----------------------------------------------
   let n = 4;
@@ -724,8 +718,6 @@ if (typeof module !== 'undefined') {
     pad.hidden = true;
 
     // header bits
-    $('#geninfo').textContent =
-      `Uniqueness proof: search examined the full solution space and found exactly one grid (verified in ${puzzle.genMs} ms, ${puzzle.attempts} candidate layout${puzzle.attempts > 1 ? 's' : ''}).`;
     $('#numrange').textContent = `1–${cur.N}`;
 
     // grid template
@@ -934,7 +926,7 @@ if (typeof module !== 'undefined') {
     clearMarks();
     const { n: m, N, cells, puzzle } = cur;
     if (cells.some(v => !v)) { $('#status').textContent = `Fill all ${N} cells.`; return; }
-    if (!isPermutation(cells)) { $('#status').textContent = 'Something repeated — check the red cells.'; return; }
+    if (!isPermutation(cells)) { $('#status').textContent = 'Duplicate numbers.'; return; }
     const st = lineStats(cells, m);
     const wrong = [];
     for (let r = 0; r < m; r++) if (st.rowS[r] !== puzzle.rowS[r] || st.rowP[r] !== puzzle.rowP[r]) wrong.push(['r', r]);
@@ -947,7 +939,7 @@ if (typeof module !== 'undefined') {
         cellEls[k === 'r' ? idx * m + j : j * m + idx].classList.add('badcell');
       }
     }
-    $('#status').textContent = `${wrong.length} line${wrong.length > 1 ? 's' : ''} don't match (red).`;
+    $('#status').textContent = `${wrong.length} line${wrong.length > 1 ? 's' : ''} don't match.`;
   }
 
   function win() {
@@ -959,7 +951,7 @@ if (typeof module !== 'undefined') {
     $('#wintime').textContent = fmtMs(cur.ms);
     $('#overlaySize').textContent = `${cur.n}×${cur.n}`;
     const url = (window.F_CONFIG && F_CONFIG.gameUrl) || location.href.split('?')[0];
-    $('#share').value = `FACTORS #${epochDay} ${cur.n}×${cur.n} solved in ${fmtMs(cur.ms)} — the Σ× grid: fill 1-${cur.N} so every row and column matches its product and sum. ${url}`;
+    $('#share').value = `FACTORS #${epochDay} ${cur.n}×${cur.n} in ${fmtMs(cur.ms)} — ${url}`;
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText($('#share').value).catch(() => {});
   }
 
@@ -1012,10 +1004,10 @@ if (typeof module !== 'undefined') {
     const dt = (performance.now() - t0).toFixed(0);
     const N = rs.length * rs.length;
     let msg;
-    if (res.count === 1 && !res.overflow) msg = `Exactly ONE solution — the puzzle is provably unique (exhaustive search, ${dt} ms).`;
-    else if (res.count >= 2) msg = `At least 2 solutions (${dt} ms) — under-determined: guessing could produce a different valid grid.`;
-    else if (res.overflow) msg = `Could not finish within the node budget — hint set likely admits many solutions or needs a deeper search.`;
-    else msg = `No solution — these numbers are inconsistent with 1–${N}.`;
+    if (res.count === 1 && !res.overflow) msg = `unique — exactly 1 solution (${dt} ms)`;
+    else if (res.count >= 2) msg = `2+ solutions (${dt} ms)`;
+    else if (res.overflow) msg = 'too large to count (node budget)';
+    else msg = `no solution — inconsistent with 1–${N}`;
     if (res.first) {
       const m = rs.length;
       const rows = Array.from({ length: m }, (_, r) => res.first.slice(r * m, r * m + m).join(' ')).join('\n');
