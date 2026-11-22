@@ -575,7 +575,7 @@ pre.ascii-art.map-art {
 </style>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='14' font-size='14'>🧭</text></svg>">
 <script>window.MF_CONFIG = { gameUrl: "https://anirudt.github.io/meridian.html" };</script>
-<!--MF-BUILD:e0a929c-->
+<!--MF-BUILD:5d8f93b-->
 </head>
 <body>
 <div id="app">
@@ -2816,10 +2816,8 @@ pre.ascii-art.map-art {
     const msgs = [];
     const sub = { role: w.role, Role: 'THE ' + w.role };
     if (w.kind === 'dest') {
-      const region = CITY_BY_ID[w.targetCity].region;
-      const text = subst(w.tpl, Object.assign({}, sub, { fact: w.fact })) +
-        '  >>> SOMEWHERE IN ' + region + '.';
-      st.destClues.push({ fromCity: st.locationId, fact: w.fact, targetCity: w.targetCity, region: region });
+      const text = subst(w.tpl, Object.assign({}, sub, { fact: w.fact }));
+      st.destClues.push({ fromCity: st.locationId, fact: w.fact, targetCity: w.targetCity });
       msgs.push({ text, kind: 'clue' });
     } else if (w.kind === 'final') {
       msgs.push({ text: subst(w.tpl, sub), kind: 'good' });
@@ -4135,7 +4133,7 @@ pre.ascii-art.map-art {
       if (!game.destClues.length) ul2.appendChild(el('li', 'unknown', 'No leads yet — interview witnesses at the crime scene.'));
       game.destClues.forEach(c => {
         const li = el('li');
-        li.innerHTML = '<span class="dim">IN ' + E.CITY_BY_ID[c.fromCity].name.toUpperCase() + ':</span> <span class="cyan">"' + c.fact + '"</span>' + (c.region ? ' <span class="amber">\u2192 ' + c.region + '</span>' : '');
+        li.innerHTML = '<span class="dim">IN ' + E.CITY_BY_ID[c.fromCity].name.toUpperCase() + ':</span> <span class="cyan">"' + c.fact + '"</span>';
         ul2.appendChild(li);
       });
       right.appendChild(ul2);
