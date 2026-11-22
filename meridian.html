@@ -575,7 +575,7 @@ pre.ascii-art.map-art {
 </style>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='14' font-size='14'>🧭</text></svg>">
 <script>window.MF_CONFIG = { gameUrl: "https://anirudt.github.io/meridian.html" };</script>
-<!--MF-BUILD:96d4e9b-->
+<!--MF-BUILD:e0a929c-->
 </head>
 <body>
 <div id="app">
@@ -2633,7 +2633,7 @@ pre.ascii-art.map-art {
   function genCase(seedStr) {
     const rng = U.makeRng(U.seedForDate(seedStr));
     const criminal = rng.pick(SUSPECTS);
-    const stops = rng.range(4, 7);                    // transit points — the daily randomness knob
+    const stops = rng.range(3, 4);                    // hops max 4 — longer trails overstayed the 5-10 min promise
     const item = rng.pick(CASE_DATA.ITEMS);
     const scene = rng.pick(CASE_DATA.SCENES);
     const codename = rng.pick(CASE_DATA.CONSTELLATIONS);
@@ -2957,7 +2957,7 @@ pre.ascii-art.map-art {
       '',
       'A member of THE CELESTIAL COURT — the ring led by',
       'the unseen mastermind known as THE CARTOGRAPHER —',
-      'has a ' + kase.stops + '-city escape route plotted.',
+      'has a ' + (kase.stops + 1) + '-city escape route plotted.',
       'Intercepts suggest the thief will hole up after the final leg.',
       '',
       'YOU HAVE ' + kase.budget + ' HOURS ON THE CLOCK.',
@@ -3366,7 +3366,7 @@ pre.ascii-art.map-art {
       'THE MERIDIAN FILES — OP. ' + k.codename + (game.playerName ? '  (DET. ' + game.playerName + ')' : ''),
       (k.date ? k.date : 'COLD CASE') + ': ' + (won ? 'SOLVED ✓' : 'UNSOLVED ✗'),
       won
-        ? 'Score ' + game.score + ' • ' + game.hoursLeft + 'h to spare • ' + k.stops + '-city trail'
+        ? 'Score ' + game.score + ' • ' + game.hoursLeft + 'h to spare • ' + (k.stops + 1) + '-city trail'
         : 'The Cartographer laughs. (No spoilers — play it yourself.)'
     ];
     if (url) lines.push(url);
