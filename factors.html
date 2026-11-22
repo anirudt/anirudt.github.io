@@ -321,7 +321,7 @@ button.primary { background: var(--ink); color: var(--paper); border-color: var(
 
 </style>
 <script>window.F_CONFIG = { gameUrl: "https://anirudt.github.io/factors.html" };</script>
-<!--F-BUILD:fea9a7b-->
+<!--F-BUILD:37c1bc3-->
 </head>
 <body>
   <header>
@@ -669,8 +669,13 @@ if (typeof module !== 'undefined') {
   const epochDay = Math.floor(
     Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) / 86400000
   );
-  $('#daynum').textContent = '#' + epochDay;
-  $('#overlayDay').textContent = epochDay;
+  // Display counts game days in production: #1 = 2026-11-22, the day the
+  // game went live on GitHub Pages. Seeding/storage stay epoch-based so
+  // rebasing the label never changes anyone's puzzle.
+  const DAY_ONE = 20779;
+  const gameDay = Math.max(1, epochDay - DAY_ONE + 1);
+  $('#daynum').textContent = '#' + gameDay;
+  $('#overlayDay').textContent = gameDay;
 
   // clue inspector stays hidden unless ?lab — players never see debug chrome
   if (/[?&]lab\b/.test(location.search)) $('#lab').hidden = false;
@@ -951,7 +956,7 @@ if (typeof module !== 'undefined') {
     $('#wintime').textContent = fmtMs(cur.ms);
     $('#overlaySize').textContent = `${cur.n}×${cur.n}`;
     const url = (window.F_CONFIG && F_CONFIG.gameUrl) || location.href.split('?')[0];
-    $('#share').value = `FACTORS #${epochDay} ${cur.n}×${cur.n} in ${fmtMs(cur.ms)} — ${url}`;
+    $('#share').value = `FACTORS #${gameDay} ${cur.n}×${cur.n} in ${fmtMs(cur.ms)} — ${url}`;
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText($('#share').value).catch(() => {});
   }
 
