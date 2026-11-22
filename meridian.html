@@ -575,7 +575,7 @@ pre.ascii-art.map-art {
 </style>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='14' font-size='14'>🧭</text></svg>">
 <script>window.MF_CONFIG = { gameUrl: "https://anirudt.github.io/meridian.html" };</script>
-<!--MF-BUILD:da78c94-->
+<!--MF-BUILD:96d4e9b-->
 </head>
 <body>
 <div id="app">
@@ -2640,7 +2640,7 @@ pre.ascii-art.map-art {
 
     const shuffled = rng.shuffle(CITIES.slice());
     const route = shuffled.slice(0, stops + 1).map(c => c.id); // [crimeScene, stop1..stopN]
-    const budget = 28 + stops * 10;                   // hours on the clock (v0.17: 26->28 with dual dest clues + realistic sim)
+    const budget = 26 + stops * 12;                   // hours on the clock (v0.19: re-tuned for distance-based flights)
 
     // Pre-rolled flight overheads (index by flight number) — deterministic.
     const rngDelay = U.makeRng(U.fnv1a(seedStr + '|flights'));
@@ -2788,6 +2788,19 @@ pre.ascii-art.map-art {
     }
   }
 
+  /* Flight time IS distance: great-circle km / ~1100 km/h cruise, clamped
+     to the game's 2-10 hr scale. Exported so the depart bar shows the truth. */
+  function flightHours(aId, bId) {
+    const cs = root.CITY_COORDS;
+    if (!cs || !cs[aId] || !cs[bId]) return 4;
+    const rad = d => d * Math.PI / 180;
+    const [la1, lo1] = cs[aId], [la2, lo2] = cs[bId];
+    const h = Math.sin(rad(la2 - la1) / 2) ** 2 +
+      Math.cos(rad(la1)) * Math.cos(rad(la2)) * Math.sin(rad(lo2 - lo1) / 2) ** 2;
+    const km = 2 * 6371 * Math.asin(Math.sqrt(h));
+    return Math.min(10, Math.max(2, Math.round(km / 1100)));
+  }
+
   /* ---------- actions (mutate state, return message list) ---------- */
 
   function interview(st, witnessId) {
@@ -2803,8 +2816,10 @@ pre.ascii-art.map-art {
     const msgs = [];
     const sub = { role: w.role, Role: 'THE ' + w.role };
     if (w.kind === 'dest') {
-      const text = subst(w.tpl, Object.assign({}, sub, { fact: w.fact }));
-      st.destClues.push({ fromCity: st.locationId, fact: w.fact, targetCity: w.targetCity });
+      const region = CITY_BY_ID[w.targetCity].region;
+      const text = subst(w.tpl, Object.assign({}, sub, { fact: w.fact })) +
+        '  >>> SOMEWHERE IN ' + region + '.';
+      st.destClues.push({ fromCity: st.locationId, fact: w.fact, targetCity: w.targetCity, region: region });
       msgs.push({ text, kind: 'clue' });
     } else if (w.kind === 'final') {
       msgs.push({ text: subst(w.tpl, sub), kind: 'good' });
@@ -2835,9 +2850,10 @@ pre.ascii-art.map-art {
     if (cityId === st.locationId) return { ok: false, msgs: [{ text: 'You are already in ' + city.name + '.', kind: 'info' }] };
 
     const delay = st.kase.delays[st.flightsTaken % st.kase.delays.length];
-    const cost = 3 + (delay ? delay.extra : 0);
+    const baseHours = flightHours(st.locationId, cityId);
+    const cost = baseHours + (delay ? delay.extra : 0);
     st.flightsTaken++;
-    const msgs = [{ text: 'Boarding for ' + city.name + ', ' + city.country + '...', kind: 'fly' }];
+    const msgs = [{ text: 'Boarding for ' + city.name + ', ' + city.country + ' \u2014 ' + baseHours + ' HRS AIR...', kind: 'fly' }];
     if (delay) msgs.push({ text: 'DELAY: ' + delay.text, kind: 'bad' });
     st.locationId = cityId;
     if (!st.visited.includes(cityId)) st.visited.push(cityId);
@@ -2996,7 +3012,7 @@ pre.ascii-art.map-art {
   root.MFEngine = {
     CITY_BY_ID, SUSPECT_BY_ID,
     genCase, createGame, interview, fly, issueWarrant, arrest,
-    witnessesHere, alreadyInterviewed, isRouteCity, finalCity, criminalOf,
+    witnessesHere, alreadyInterviewed, isRouteCity, finalCity, criminalOf, flightHours,
     registryMatches, suspectContradictions, validSuspects, stingerFor,
     venuesFor, assignVenues,
     briefingLines, verdictLines, phraseFor
@@ -3716,7 +3732,7 @@ pre.ascii-art.map-art {
   }
 
   function openFlights() {
-    openModal('flights', '▚ Flight board — base flight 3 hrs (+ delays). 1 hr = 1 sec in the air. ▞', function (body) {
+    openModal('flights', '▚ Flight board — flight time = real distance (2–10 hrs) + delays. 1 hr = 1 sec in the air. ▞', function (body) {
       const mm = body.closest ? body.closest('.modal') : null;
       if (mm) mm.classList.add('modal-wide');
       const hasGeo = !!(root.WORLD_GEO && root.WORLD_GEO.d);
@@ -3781,7 +3797,7 @@ pre.ascii-art.map-art {
         }
         const c = E.CITY_BY_ID[selected];
         bar.appendChild(el('span', 'cyan', 'DESTINATION: ' + c.name + ', ' + c.country));
-        const dep = el('button', 'btn amber-btn', 'DEPART (3-7 HRS)');
+        const dep = el('button', 'btn amber-btn', 'DEPART (' + E.flightHours(game.locationId, selected) + ' HRS)');
         dep.onclick = function () { travelTo(selected); };
         const cancel = el('button', 'btn', 'CANCEL');
         cancel.onclick = function () { selected = null; Audio.click(); show(); };
@@ -4119,7 +4135,7 @@ pre.ascii-art.map-art {
       if (!game.destClues.length) ul2.appendChild(el('li', 'unknown', 'No leads yet — interview witnesses at the crime scene.'));
       game.destClues.forEach(c => {
         const li = el('li');
-        li.innerHTML = '<span class="dim">IN ' + E.CITY_BY_ID[c.fromCity].name.toUpperCase() + ':</span> <span class="cyan">"' + c.fact + '"</span>';
+        li.innerHTML = '<span class="dim">IN ' + E.CITY_BY_ID[c.fromCity].name.toUpperCase() + ':</span> <span class="cyan">"' + c.fact + '"</span>' + (c.region ? ' <span class="amber">\u2192 ' + c.region + '</span>' : '');
         ul2.appendChild(li);
       });
       right.appendChild(ul2);
